@@ -1,0 +1,34 @@
+name: deploy docs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy_docs:
+    name: Deploy docs
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          pip install -r requirements.txt
+          pip install .
+      - name: Build docs
+        run: sphinx-build -b html docs public
+        env:
+          NUCLEI_TOKEN: ${{ secrets.NUCLEI_TOKEN }}
+
+      - name: Publish docs
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public

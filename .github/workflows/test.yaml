@@ -1,0 +1,107 @@
+name: Test
+
+on:
+  push:
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
+  workflow_call:
+
+jobs:
+  test:
+    name: Unit test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - '3.9'
+          - '3.10'
+          - '3.11'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          pip install -r requirements.txt
+          pip install .
+      - name: Test
+        run: coverage run -m pytest
+
+      - name: Post coverage results
+        uses: coverallsapp/github-action@v2
+        with:
+          flag-name: run-${{ matrix.python-version }}
+          parallel: true
+
+  finish:
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true
+          carryforward: run-3.9
+
+  lint:
+    name: Formatting check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Full git history is needed to get a proper list of changed test_files within `super-linter`
+          fetch-depth: 0
+
+      - name: Lint
+        uses: github/super-linter@v4
+        env:
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: main
+
+          VALIDATE_JSCPD: false
+          VALIDATE_CSS: false
+          VALIDATE_BASH: false
+          VALIDATE_YAML: false
+          VALIDATE_PYTHON_PYLINT: false
+          VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_MARKDOWN: false
+
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          LINTER_RULES_PATH: /
+          PYTHON_BLACK_CONFIG_FILE: pyproject.toml
+          PYTHON_ISORT_CONFIG_FILE: pyproject.toml
+          PYTHON_MYPY_CONFIG_FILE: pyproject.toml
+          PYTHON_FLAKE8_CONFIG_FILE: .flake8
+
+  test_docs:
+    name: Test docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          pip install -r requirements.txt
+          pip install .
+      - name: Build docs
+        run: sphinx-build -b html docs public
+        env:
+          NUCLEI_TOKEN: ${{ secrets.NUCLEI_TOKEN }}
