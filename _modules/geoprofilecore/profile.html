@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geoprofilecore.profile &mdash; GeoProfileCore 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/index.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            GeoProfileCore
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tree/getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tree/reference.html">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GeoProfileCore</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">geoprofilecore.profile</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for geoprofilecore.profile</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span> <span class="nn">plotly</span> <span class="kn">import</span> <span class="n">graph_objects</span> <span class="k">as</span> <span class="n">go</span>
+<span class="kn">from</span> <span class="nn">plotly.graph_objs</span> <span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span> <span class="nn">plotly.subplots</span> <span class="kn">import</span> <span class="n">make_subplots</span>
+<span class="kn">from</span> <span class="nn">python_tsp.exact</span> <span class="kn">import</span> <span class="n">solve_tsp_dynamic_programming</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">spatial</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">skspatial.objects</span> <span class="kn">import</span> <span class="n">Line</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">geoprofilecore.column</span> <span class="kn">import</span> <span class="n">Column</span>
+
+<span class="c1"># optional imports</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">contextily</span> <span class="k">as</span> <span class="nn">ctx</span>
+    <span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="n">Axes</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">gpd</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">plt</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="Section"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.profile.Section">[docs]</a><span class="k">class</span> <span class="nc">Section</span><span class="p">:</span>
+<div class="viewcode-block" id="Section.__init__"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.profile.Section.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Column</span><span class="p">],</span>
+        <span class="n">profile_line</span><span class="p">:</span> <span class="n">LineString</span><span class="p">,</span>
+        <span class="n">buffer</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">sorting_algorithm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nearest_neighbor&quot;</span><span class="p">,</span>
+        <span class="n">reproject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class that filters, sorts and plot columns based on a profile line.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data_list: list</span>
+<span class="sd">            List with Column classes.</span>
+<span class="sd">        profile_line: LineString</span>
+<span class="sd">            profile line of the scoss section.</span>
+<span class="sd">        buffer: float, optional</span>
+<span class="sd">            Default is 10</span>
+<span class="sd">            Buffer distance use to include columns in the profile [m]</span>
+<span class="sd">        sorting_algorithm: str, optional</span>
+<span class="sd">            Default is nearest_neighbor.</span>
+<span class="sd">            Define the sorting algorithm use to sort the data points.</span>
+<span class="sd">            Can be one of the following:</span>
+
+<span class="sd">                - tsp (traveling salesman problem)</span>
+<span class="sd">                - nearest_neighbor</span>
+<span class="sd">                - custom</span>
+
+<span class="sd">        reproject: bool, optional</span>
+<span class="sd">            Default is True</span>
+<span class="sd">            Reproject points of the column onto the profile line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">buffer</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Buffer distance cannot be less than zero&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sorting_algorithm</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;tsp&quot;</span><span class="p">,</span> <span class="s2">&quot;custom&quot;</span><span class="p">,</span> <span class="s2">&quot;nearest_neighbor&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sorting option not available&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_list</span> <span class="o">=</span> <span class="n">data_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_profile_line</span> <span class="o">=</span> <span class="n">profile_line</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sorting_algorithm</span> <span class="o">=</span> <span class="n">sorting_algorithm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reproject</span> <span class="o">=</span> <span class="n">reproject</span>
+
+        <span class="c1"># validate data</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data_list</span><span class="p">))):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No unique names in columns&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">y</span><span class="p">)),</span> <span class="n">data_list</span><span class="p">))):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No unique coordinates in columns&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">reproject</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;reproject points of the column onto the profile line.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reproject</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">profile_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LineString</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;profile line of the scoss section.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_profile_line</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data_list_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Column</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;all columns provided by initializing the class&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_list</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;buffer distance use to include columns in the profile [m]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sorting_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;sorting algorithm used to sort columns to profile line&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorting_algorithm</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">profile_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LineString</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;polygon create based on the profile line and the buffer argument&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">cap_style</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">join_style</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coordinates_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;list of coordinates of the all the column locations&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span>
+                <span class="nb">map</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">y</span><span class="p">),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data_list_all</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coordinates_include</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;list of coordinates of the selected column locations&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span>
+                <span class="nb">map</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">y</span><span class="p">),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data_list_include</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Column</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;selected columns based on profile polygon&quot;&quot;&quot;</span>
+
+        <span class="n">data_list_include</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_list_all</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Point</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">covered_by</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_polygon</span><span class="p">):</span>
+                <span class="n">data_list_include</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list_include</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;No data points are selected. Change the profile line or increase the buffer distance.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data_list_include</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">distance_matrix_include</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the distance matrix. Returns the matrix of all pair-wise distances [m].&quot;&quot;&quot;</span>
+        <span class="n">distance_matrix</span> <span class="o">=</span> <span class="n">spatial</span><span class="o">.</span><span class="n">distance_matrix</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">distance_matrix</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">distance_matrix_include_reprojection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the distance matrix. Returns the matrix of all pair-wise distances [m].&quot;&quot;&quot;</span>
+
+        <span class="c1"># make sure the data list order is consistent</span>
+        <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include_reprojection</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">))</span>
+        <span class="p">]</span>
+
+        <span class="n">distance_matrix</span> <span class="o">=</span> <span class="n">spatial</span><span class="o">.</span><span class="n">distance_matrix</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coordinates</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coordinates</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">distance_matrix</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Closed column point on the start of the profile line&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">spatial</span><span class="o">.</span><span class="n">distance_matrix</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">,</span>
+            <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">xy</span><span class="p">)),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">end_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Closed column point on the end of the profile line&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">spatial</span><span class="o">.</span><span class="n">distance_matrix</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">,</span>
+            <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">xy</span><span class="p">)),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coordinates_include_reprojection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;list of coordinates of the selected column locations reprojected on the profile line&quot;&quot;&quot;</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">xy</span><span class="p">))</span>
+        <span class="n">projected_point</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">sigment</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">Point</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">covered_by</span><span class="p">(</span>
+                    <span class="n">LineString</span><span class="p">((</span><span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">cap_style</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">join_style</span><span class="o">=</span><span class="mi">1</span>
+                    <span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">Line</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span>
+                        <span class="n">point_a</span><span class="o">=</span><span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span><span class="p">],</span> <span class="n">point_b</span><span class="o">=</span><span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="n">point</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">project_point</span><span class="p">((</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="n">projected_point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">projected_point</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sorting</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Based on the soring algorithm the columns are sorted.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        permutation</span>
+<span class="sd">            A permutation of nodes from 0 to n that produces the least total</span>
+<span class="sd">            distance</span>
+
+<span class="sd">        distance</span>
+<span class="sd">            The total distance the optimal permutation produces</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorting_algorithm</span> <span class="o">==</span> <span class="s2">&quot;tsp&quot;</span><span class="p">:</span>
+            <span class="c1"># place start column first</span>
+            <span class="n">start_node</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">spatial</span><span class="o">.</span><span class="n">distance_matrix</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_all</span><span class="p">,</span>
+                    <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">xy</span><span class="p">)),</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_list</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_list</span><span class="p">[</span><span class="n">start_node</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_list</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">start_node</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reproject</span><span class="p">:</span>
+                <span class="n">distance_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_matrix_include_reprojection</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">distance_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_matrix_include</span>
+
+            <span class="c1"># change the cost function such that every arc to</span>
+            <span class="c1"># the depot has cost 0. To create an open tsp</span>
+            <span class="n">distance_matrix</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_node</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">return</span> <span class="n">solve_tsp_dynamic_programming</span><span class="p">(</span><span class="n">distance_matrix</span><span class="p">,</span> <span class="n">maxsize</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorting_algorithm</span> <span class="o">==</span> <span class="s2">&quot;nearest_neighbor&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reproject</span><span class="p">:</span>
+                <span class="n">distance_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_matrix_include_reprojection</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">distance_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_matrix_include</span>
+
+            <span class="c1"># replace all self correlated distances to nan</span>
+            <span class="n">distance_matrix</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">diag_indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">))]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+            <span class="n">permutation</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_node</span><span class="p">]</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">permutation</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">):</span>
+                <span class="c1"># add next column to permutation list</span>
+                <span class="n">permutation</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">nanargmin</span><span class="p">(</span><span class="n">distance_matrix</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="n">permutation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="p">)</span>
+
+                <span class="c1"># set inf to used columns in distance_matrix</span>
+                <span class="n">distance_matrix</span><span class="p">[:,</span> <span class="n">permutation</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                <span class="n">distance_matrix</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">permutation</span><span class="p">,</span>
+                <span class="n">LineString</span><span class="p">(</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">permutation</span><span class="p">]</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorting_algorithm</span> <span class="o">==</span> <span class="s2">&quot;custom&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reproject</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">))),</span>
+                    <span class="n">LineString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include_reprojection</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">))),</span>
+                    <span class="n">LineString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+
+<div class="viewcode-block" id="Section.plot_map"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.profile.Section.plot_map">[docs]</a>    <span class="k">def</span> <span class="nf">plot_map</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">add_basemap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">add_tags</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Axes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a map that contain the following:</span>
+<span class="sd">            - location of the columns (gray point)</span>
+<span class="sd">            - location of the selected columns (black point)</span>
+<span class="sd">            - profile line (gray line)</span>
+<span class="sd">            - profile polygon (light gray area)</span>
+<span class="sd">            - re-projection (black line)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : plt.Axes, optional</span>
+<span class="sd">            plt.Axes used to create the map</span>
+<span class="sd">        add_basemap : bool, optional</span>
+<span class="sd">            default is False</span>
+<span class="sd">            Flag that includes basemap in figure.</span>
+<span class="sd">        add_tags : bool, optional</span>
+<span class="sd">            default is True</span>
+<span class="sd">            Show the CTP names as tags on the map</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        plt.Axes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">gpd</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">plt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;No module named &#39;geopandas&#39; or matplotlib&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># plot all column locations</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+                <span class="n">geometry</span><span class="o">=</span><span class="n">gpd</span><span class="o">.</span><span class="n">points_from_xy</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_all</span><span class="p">)),</span>
+                <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:28992&quot;</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># plot all column locations</span>
+            <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+                <span class="n">geometry</span><span class="o">=</span><span class="n">gpd</span><span class="o">.</span><span class="n">points_from_xy</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_all</span><span class="p">)),</span>
+                <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:28992&quot;</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+
+        <span class="c1"># add the use defined profile line</span>
+        <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="p">],</span>
+            <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:28992&quot;</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+
+        <span class="c1"># add the use defined profile line</span>
+        <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_polygon</span><span class="p">],</span>
+            <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:28992&quot;</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+        <span class="c1"># plot all column locations that are included</span>
+        <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
+            <span class="n">geometry</span><span class="o">=</span><span class="n">gpd</span><span class="o">.</span><span class="n">points_from_xy</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">)),</span>
+            <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:28992&quot;</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+
+        <span class="c1"># add the use sorting defined profile line</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorting</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+
+        <span class="c1"># add re-projection of point to line</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reproject</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include_reprojection</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                    <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="n">xy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                    <span class="n">xycoords</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
+                    <span class="n">xytext</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
+                    <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">connectionstyle</span><span class="o">=</span><span class="s2">&quot;arc3,rad=0.&quot;</span><span class="p">),</span>
+                <span class="p">)</span>
+
+        <span class="c1"># add labels (column names) to map</span>
+        <span class="k">if</span> <span class="n">add_tags</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span> <span class="k">if</span> <span class="n">debug</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_list_all</span>
+            <span class="p">):</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                    <span class="n">i</span> <span class="k">if</span> <span class="n">debug</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">y</span><span class="p">),</span>
+                    <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                    <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="c1"># add base map</span>
+        <span class="k">if</span> <span class="n">add_basemap</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ctx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;No module named &#39;contextily&#39;&quot;</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">add_basemap</span><span class="p">(</span>
+                <span class="n">axis</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:28992&quot;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">providers</span><span class="o">.</span><span class="n">Stamen</span><span class="o">.</span><span class="n">TonerLite</span>
+            <span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">ticklabel_format</span><span class="p">(</span><span class="n">useOffset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;plain&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">axis</span></div>
+
+<div class="viewcode-block" id="Section.plot"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.profile.Section.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">figure</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Figure</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">x0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">groundwater_level</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">surface_level</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Figure</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create profile based on the column&#39;s location, sorting algorithm and profile line.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        figure: Figure, optional</span>
+<span class="sd">            A plotly Figure to add the profile to.</span>
+<span class="sd">        x0: float, optional</span>
+<span class="sd">            Default is 0.0</span>
+<span class="sd">            Start of the profile line.</span>
+<span class="sd">        groundwater_level: bool, optional</span>
+<span class="sd">            Default is False</span>
+<span class="sd">            Flag that indicated if groundwater level is added to the profile</span>
+<span class="sd">        surface_level: bool, optional</span>
+<span class="sd">            Default is False</span>
+<span class="sd">            Flag that indicated if groundwater level is added to the profile</span>
+<span class="sd">        kwargs: Any</span>
+<span class="sd">            kwargs past to the column plot function.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        plotly.graph_objs.Figure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># get sorting list and profile distance</span>
+        <span class="n">permutation</span><span class="p">,</span> <span class="n">distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorting</span>
+
+        <span class="c1"># get the coordinates of the columns</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reproject</span><span class="p">:</span>
+            <span class="n">coordinates_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include_reprojection</span>
+            <span class="n">coordinates_dict</span><span class="p">[</span><span class="s2">&quot;start_line&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="p">]</span>
+            <span class="n">coordinates_dict</span><span class="p">[</span><span class="s2">&quot;end_line&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">]</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">length</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">coordinates_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">permutation</span><span class="p">,</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">permutation</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">coordinates_dict</span><span class="p">[</span><span class="s2">&quot;start_line&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">]</span>
+            <span class="n">coordinates_dict</span><span class="p">[</span><span class="s2">&quot;end_line&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]][</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">figure</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># initialize plot</span>
+            <span class="n">figure</span> <span class="o">=</span> <span class="n">make_subplots</span><span class="p">(</span>
+                <span class="n">rows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">cols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">y_title</span><span class="o">=</span><span class="s2">&quot;Depth [m REF]&quot;</span><span class="p">,</span>
+                <span class="n">shared_yaxes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">horizontal_spacing</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+                <span class="n">column_widths</span><span class="o">=</span><span class="p">[</span><span class="n">distance</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="c1"># duplicate start and endpoint</span>
+        <span class="n">permutation</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;start_line&quot;</span><span class="p">)</span>
+        <span class="n">permutation</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;end_line&quot;</span><span class="p">)</span>
+
+        <span class="c1"># placeholders</span>
+        <span class="n">groundwater_level_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">surface_level_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">center_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># loop over permutation</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">permutation</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Add column to profile&quot;</span><span class="p">):</span>
+            <span class="c1"># right side</span>
+            <span class="n">d_right</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">LineString</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="p">),</span>
+                        <span class="p">(</span>
+                            <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]][</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">length</span>
+                <span class="o">/</span> <span class="mi">2</span>
+            <span class="p">)</span>
+
+            <span class="c1"># left side</span>
+            <span class="n">d_left</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">LineString</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="p">),</span>
+                        <span class="p">(</span>
+                            <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="n">coordinates_dict</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]][</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">length</span>
+                <span class="o">/</span> <span class="mi">2</span>
+            <span class="p">)</span>
+
+            <span class="c1"># add columns to profile</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">figure</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span>
+                <span class="n">d_left</span><span class="o">=</span><span class="n">d_left</span><span class="p">,</span>
+                <span class="n">d_right</span><span class="o">=</span><span class="n">d_right</span><span class="p">,</span>
+                <span class="n">profile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># fill list</span>
+            <span class="n">center_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x0</span> <span class="o">+</span> <span class="n">d_left</span><span class="p">)</span>
+            <span class="n">groundwater_level_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">groundwater_level</span>
+            <span class="p">)</span>
+            <span class="n">surface_level_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">[</span><span class="n">permutation</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
+
+            <span class="c1"># set the starting point of the next column</span>
+            <span class="n">x0</span> <span class="o">+=</span> <span class="n">d_left</span> <span class="o">+</span> <span class="n">d_right</span>
+
+        <span class="c1"># Add dashed blue line representing phreatic level</span>
+        <span class="k">if</span> <span class="n">groundwater_level</span><span class="p">:</span>
+            <span class="n">figure</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+                <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Groundwater level [m REF]&quot;</span><span class="p">,</span>
+                    <span class="n">x</span><span class="o">=</span><span class="n">center_list</span><span class="p">,</span>
+                    <span class="n">y</span><span class="o">=</span><span class="n">groundwater_level_list</span><span class="p">,</span>
+                    <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;Blue&quot;</span><span class="p">,</span> <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                    <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Add dashed brown line representing ground level</span>
+        <span class="k">if</span> <span class="n">surface_level</span><span class="p">:</span>
+            <span class="n">figure</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+                <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Surface level [m REF]&quot;</span><span class="p">,</span>
+                    <span class="n">x</span><span class="o">=</span><span class="n">center_list</span><span class="p">,</span>
+                    <span class="n">y</span><span class="o">=</span><span class="n">surface_level_list</span><span class="p">,</span>
+                    <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;Brown&quot;</span><span class="p">,</span> <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                    <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">figure</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, CEMS BV.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

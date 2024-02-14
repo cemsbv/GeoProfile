@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reference &mdash; GeoProfileCore 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/index.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Getting started" href="getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GeoProfileCore
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#column">Column</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geoprofilecore.column.Column"><code class="docutils literal notranslate"><span class="pre">Column</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.column.Column.__init__"><code class="docutils literal notranslate"><span class="pre">Column.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.column.Column.classify"><code class="docutils literal notranslate"><span class="pre">Column.classify</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.column.Column.data"><code class="docutils literal notranslate"><span class="pre">Column.data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.column.Column.from_bore"><code class="docutils literal notranslate"><span class="pre">Column.from_bore()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.column.Column.from_cpt"><code class="docutils literal notranslate"><span class="pre">Column.from_cpt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.column.Column.groundwater_level"><code class="docutils literal notranslate"><span class="pre">Column.groundwater_level</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.column.Column.name"><code class="docutils literal notranslate"><span class="pre">Column.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.column.Column.plot"><code class="docutils literal notranslate"><span class="pre">Column.plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.column.Column.x"><code class="docutils literal notranslate"><span class="pre">Column.x</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.column.Column.y"><code class="docutils literal notranslate"><span class="pre">Column.y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.column.Column.z"><code class="docutils literal notranslate"><span class="pre">Column.z</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#crosssection">CrossSection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geoprofilecore.profile.Section"><code class="docutils literal notranslate"><span class="pre">Section</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.__init__"><code class="docutils literal notranslate"><span class="pre">Section.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.buffer"><code class="docutils literal notranslate"><span class="pre">Section.buffer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.coordinates_all"><code class="docutils literal notranslate"><span class="pre">Section.coordinates_all</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.coordinates_include"><code class="docutils literal notranslate"><span class="pre">Section.coordinates_include</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.coordinates_include_reprojection"><code class="docutils literal notranslate"><span class="pre">Section.coordinates_include_reprojection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.data_list_all"><code class="docutils literal notranslate"><span class="pre">Section.data_list_all</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.data_list_include"><code class="docutils literal notranslate"><span class="pre">Section.data_list_include</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.distance_matrix_include"><code class="docutils literal notranslate"><span class="pre">Section.distance_matrix_include</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.distance_matrix_include_reprojection"><code class="docutils literal notranslate"><span class="pre">Section.distance_matrix_include_reprojection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.end_node"><code class="docutils literal notranslate"><span class="pre">Section.end_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.plot"><code class="docutils literal notranslate"><span class="pre">Section.plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.plot_map"><code class="docutils literal notranslate"><span class="pre">Section.plot_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.profile_line"><code class="docutils literal notranslate"><span class="pre">Section.profile_line</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.profile_polygon"><code class="docutils literal notranslate"><span class="pre">Section.profile_polygon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.reproject"><code class="docutils literal notranslate"><span class="pre">Section.reproject</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.sorting"><code class="docutils literal notranslate"><span class="pre">Section.sorting</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.sorting_algorithm"><code class="docutils literal notranslate"><span class="pre">Section.sorting_algorithm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geoprofilecore.profile.Section.start_node"><code class="docutils literal notranslate"><span class="pre">Section.start_node</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GeoProfileCore</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tree/reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="reference">
+<h1>Reference<a class="headerlink" href="#reference" title="Permalink to this heading"></a></h1>
+<section id="column">
+<h2>Column<a class="headerlink" href="#column" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geoprofilecore.column.</span></span><span class="sig-name descname"><span class="pre">Column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classify</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'N/A'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groundwater_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/geoprofilecore/column.html#Column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoprofilecore.column.Column" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classify</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'N/A'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groundwater_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/geoprofilecore/column.html#Column.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoprofilecore.column.Column.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Holds the data related to a column in the profile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>classify</strong> (<em>dict</em>) – <p>Dictionary that holds the classification data. Must
+contain the following keys:</p>
+<blockquote>
+<div><ul>
+<li><dl class="simple">
+<dt>depth</dt><dd><p>Top of the layers [m REF]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>thickness</dt><dd><p>Thickness of the layer [m]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>geotechnicalSoilName</dt><dd><p>Soil code of the layer related to the NEN-EN-ISO 14688-1:2019+NEN 8990:2020 Tabel NA.17</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – x coordinate of the column. Must be in a Cartesian coordinate system</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – x coordinate of the column. Must be in a Cartesian coordinate system</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – default is N/A
+Name of the location.</p></li>
+<li><p><strong>z</strong> (<em>float</em><em>, </em><em>optional</em>) – Default is None
+surface level of the column [m REF].</p></li>
+<li><p><strong>groundwater_level</strong> (<em>float</em><em>, </em><em>optional</em>) – Default is None
+groundwater level of the column [m REF].</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – <p>Default is None
+Other data that can be added to the plot. If not None than dictionary
+must contain the following key:</p>
+<blockquote>
+<div><ul>
+<li><dl class="simple">
+<dt>depth</dt><dd><p>Top of the layers [m REF]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column.classify">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">classify</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#geoprofilecore.column.Column.classify" title="Permalink to this definition"></a></dt>
+<dd><p>dictionary that holds the classification data</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column.data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#geoprofilecore.column.Column.data" title="Permalink to this definition"></a></dt>
+<dd><p>dictionary that holds the other data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column.from_bore">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gef</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/geoprofilecore/column.html#Column.from_bore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoprofilecore.column.Column.from_bore" title="Permalink to this definition"></a></dt>
+<dd><p>Transform the BoreData DataClass to our Column class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gef</strong> (<em>pygef.bore.BoreData</em>) – Bore object created by pygef.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#geoprofilecore.column.Column" title="geoprofilecore.column.Column">Column</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column.from_cpt">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cpt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gef</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/geoprofilecore/column.html#Column.from_cpt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoprofilecore.column.Column.from_cpt" title="Permalink to this definition"></a></dt>
+<dd><p>Use the cptcore response to translate the NEN6740 Table 2B to the NEN-EN-ISO 14688-1:2019+NEN 8990:2020 Tabel NA.17</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> (<em>dict</em>) – response of the CPT Core classify API call</p></li>
+<li><p><strong>gef</strong> (<em>pygef.cpt.CptData</em>) – CPT object created by pygef.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#geoprofilecore.column.Column" title="geoprofilecore.column.Column">Column</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column.groundwater_level">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">groundwater_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#geoprofilecore.column.Column.groundwater_level" title="Permalink to this definition"></a></dt>
+<dd><p>groundwater level [m REF]</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#geoprofilecore.column.Column.name" title="Permalink to this definition"></a></dt>
+<dd><p>column name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'percentage'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_left</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_right</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillpattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/geoprofilecore/column.html#Column.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoprofilecore.column.Column.plot" title="Permalink to this definition"></a></dt>
+<dd><p>Create a plotly figure with the Soil Layout and the Data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>figure</strong> (<em>Figure</em><em>, </em><em>optional</em>) – Default is None
+A plotly graph object.</p></li>
+<li><p><strong>hue</strong> (<em>str</em><em>, </em><em>optional</em>) – default is percentage
+enum : [‘percentage’, ‘uniform’]
+Show either the soil data in percentage or use a uniform color.</p></li>
+<li><p><strong>plot_kwargs</strong> (<em>Dict</em><em>, </em><em>optional</em>) – <p>Default is None
+Dictionary with keys for properties to plot:</p>
+<p><a href="#id1"><span class="problematic" id="id2">``</span></a>` python</p>
+<blockquote>
+<div><p>{</p>
+<blockquote>
+<div><p>“qc”: {</p>
+<blockquote>
+<div><blockquote>
+<div><p>“line_color”: “black”,</p>
+<p>”factor”: 1,</p>
+</div></blockquote>
+<p>},</p>
+</div></blockquote>
+<p>”fr”: {“line_color”: “red”},</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p><a href="#id3"><span class="problematic" id="id4">``</span></a><a href="#id5"><span class="problematic" id="id6">`</span></a></p>
+</p></li>
+<li><p><strong>x0</strong> (<em>float</em><em>, </em><em>optional</em>) – Default is 0
+The x-coordinate of the start of the Soil Layout plot</p></li>
+<li><p><strong>d_left</strong> (<em>float</em><em>, </em><em>optional</em>) – Default is 0.5
+The width of the Soil Layout plot left of the center line.
+Only used when heu is not percentage. If percentage the sum of
+d_right and d_left is DEFAULT_COLUMN_WIDTH.</p></li>
+<li><p><strong>d_right</strong> (<em>float</em><em>, </em><em>optional</em>) – Default is 0.5
+The width of the Soil Layout plot right of the center line.
+Only used when heu is not percentage. If percentage the sum of
+d_right and d_left is DEFAULT_COLUMN_WIDTH.</p></li>
+<li><p><strong>fillpattern</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default is True
+Fill the layers with the pattern related to the soil code of the
+layer based on the NEN-EN-ISO 14688-1:2019+NEN 8990:2020 Tabel NA.17</p></li>
+<li><p><strong>profile</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default is False
+Flag that indicates if plot is standalone or part on of a profile.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column.x">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#geoprofilecore.column.Column.x" title="Permalink to this definition"></a></dt>
+<dd><p>x coordinate</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column.y">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#geoprofilecore.column.Column.y" title="Permalink to this definition"></a></dt>
+<dd><p>y coordinate</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.column.Column.z">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#geoprofilecore.column.Column.z" title="Permalink to this definition"></a></dt>
+<dd><p>surface level [m REF]</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="crosssection">
+<h2>CrossSection<a class="headerlink" href="#crosssection" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geoprofilecore.profile.</span></span><span class="sig-name descname"><span class="pre">Section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting_algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest_neighbor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reproject</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/geoprofilecore/profile.html#Section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoprofilecore.profile.Section" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sorting_algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest_neighbor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reproject</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/geoprofilecore/profile.html#Section.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoprofilecore.profile.Section.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Class that filters, sorts and plot columns based on a profile line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_list</strong> (<em>list</em>) – List with Column classes.</p></li>
+<li><p><strong>profile_line</strong> (<em>LineString</em>) – profile line of the scoss section.</p></li>
+<li><p><strong>buffer</strong> (<em>float</em><em>, </em><em>optional</em>) – Default is 10
+Buffer distance use to include columns in the profile [m]</p></li>
+<li><p><strong>sorting_algorithm</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Default is nearest_neighbor.
+Define the sorting algorithm use to sort the data points.
+Can be one of the following:</p>
+<blockquote>
+<div><ul>
+<li><p>tsp (traveling salesman problem)</p></li>
+<li><p>nearest_neighbor</p></li>
+<li><p>custom</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>reproject</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default is True
+Reproject points of the column onto the profile line.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.buffer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">buffer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#geoprofilecore.profile.Section.buffer" title="Permalink to this definition"></a></dt>
+<dd><p>buffer distance use to include columns in the profile [m]</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.coordinates_all">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coordinates_all</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">floating</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#geoprofilecore.profile.Section.coordinates_all" title="Permalink to this definition"></a></dt>
+<dd><p>list of coordinates of the all the column locations</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.coordinates_include">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coordinates_include</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">floating</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#geoprofilecore.profile.Section.coordinates_include" title="Permalink to this definition"></a></dt>
+<dd><p>list of coordinates of the selected column locations</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.coordinates_include_reprojection">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coordinates_include_reprojection</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#geoprofilecore.profile.Section.coordinates_include_reprojection" title="Permalink to this definition"></a></dt>
+<dd><p>list of coordinates of the selected column locations reprojected on the profile line</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.data_list_all">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_list_all</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#geoprofilecore.column.Column" title="geoprofilecore.column.Column"><span class="pre">Column</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#geoprofilecore.profile.Section.data_list_all" title="Permalink to this definition"></a></dt>
+<dd><p>all columns provided by initializing the class</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.data_list_include">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_list_include</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#geoprofilecore.column.Column" title="geoprofilecore.column.Column"><span class="pre">Column</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#geoprofilecore.profile.Section.data_list_include" title="Permalink to this definition"></a></dt>
+<dd><p>selected columns based on profile polygon</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.distance_matrix_include">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">distance_matrix_include</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">floating</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#geoprofilecore.profile.Section.distance_matrix_include" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the distance matrix. Returns the matrix of all pair-wise distances [m].</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.distance_matrix_include_reprojection">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">distance_matrix_include_reprojection</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">floating</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#geoprofilecore.profile.Section.distance_matrix_include_reprojection" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the distance matrix. Returns the matrix of all pair-wise distances [m].</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.end_node">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">end_node</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#geoprofilecore.profile.Section.end_node" title="Permalink to this definition"></a></dt>
+<dd><p>Closed column point on the end of the profile line</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groundwater_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/geoprofilecore/profile.html#Section.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoprofilecore.profile.Section.plot" title="Permalink to this definition"></a></dt>
+<dd><p>Create profile based on the column’s location, sorting algorithm and profile line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>figure</strong> (<em>Figure</em><em>, </em><em>optional</em>) – A plotly Figure to add the profile to.</p></li>
+<li><p><strong>x0</strong> (<em>float</em><em>, </em><em>optional</em>) – Default is 0.0
+Start of the profile line.</p></li>
+<li><p><strong>groundwater_level</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default is False
+Flag that indicated if groundwater level is added to the profile</p></li>
+<li><p><strong>surface_level</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default is False
+Flag that indicated if groundwater level is added to the profile</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – kwargs past to the column plot function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plotly.graph_objs.Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.plot_map">
+<span class="sig-name descname"><span class="pre">plot_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_basemap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/geoprofilecore/profile.html#Section.plot_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoprofilecore.profile.Section.plot_map" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Create a map that contain the following:</dt><dd><ul class="simple">
+<li><p>location of the columns (gray point)</p></li>
+<li><p>location of the selected columns (black point)</p></li>
+<li><p>profile line (gray line)</p></li>
+<li><p>profile polygon (light gray area)</p></li>
+<li><p>re-projection (black line)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>plt.Axes</em><em>, </em><em>optional</em>) – plt.Axes used to create the map</p></li>
+<li><p><strong>add_basemap</strong> (<em>bool</em><em>, </em><em>optional</em>) – default is False
+Flag that includes basemap in figure.</p></li>
+<li><p><strong>add_tags</strong> (<em>bool</em><em>, </em><em>optional</em>) – default is True
+Show the CTP names as tags on the map</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.profile_line">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">profile_line</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">LineString</span></em><a class="headerlink" href="#geoprofilecore.profile.Section.profile_line" title="Permalink to this definition"></a></dt>
+<dd><p>profile line of the scoss section.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.profile_polygon">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">profile_polygon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">LineString</span></em><a class="headerlink" href="#geoprofilecore.profile.Section.profile_polygon" title="Permalink to this definition"></a></dt>
+<dd><p>polygon create based on the profile line and the buffer argument</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.reproject">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reproject</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#geoprofilecore.profile.Section.reproject" title="Permalink to this definition"></a></dt>
+<dd><p>reproject points of the column onto the profile line.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.sorting">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sorting</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span></em><a class="headerlink" href="#geoprofilecore.profile.Section.sorting" title="Permalink to this definition"></a></dt>
+<dd><p>Based on the soring algorithm the columns are sorted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>permutation</em> – A permutation of nodes from 0 to n that produces the least total
+distance</p></li>
+<li><p><em>distance</em> – The total distance the optimal permutation produces</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.sorting_algorithm">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sorting_algorithm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#geoprofilecore.profile.Section.sorting_algorithm" title="Permalink to this definition"></a></dt>
+<dd><p>sorting algorithm used to sort columns to profile line</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geoprofilecore.profile.Section.start_node">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_node</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#geoprofilecore.profile.Section.start_node" title="Permalink to this definition"></a></dt>
+<dd><p>Closed column point on the start of the profile line</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, CEMS BV.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

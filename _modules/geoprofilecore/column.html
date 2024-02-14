@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geoprofilecore.column &mdash; GeoProfileCore 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/index.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            GeoProfileCore
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tree/getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tree/reference.html">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GeoProfileCore</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">geoprofilecore.column</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for geoprofilecore.column</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">ImageColor</span>
+<span class="kn">from</span> <span class="nn">plotly</span> <span class="kn">import</span> <span class="n">graph_objects</span> <span class="k">as</span> <span class="n">go</span>
+<span class="kn">from</span> <span class="nn">plotly.graph_objects</span> <span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span> <span class="nn">plotly.subplots</span> <span class="kn">import</span> <span class="n">make_subplots</span>
+
+<span class="kn">from</span> <span class="nn">geoprofilecore.constant</span> <span class="kn">import</span> <span class="n">CODING_SOIL_TYPES</span>
+
+<span class="c1"># optional import</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">pygef.bore</span> <span class="kn">import</span> <span class="n">BoreData</span>
+    <span class="kn">from</span> <span class="nn">pygef.cpt</span> <span class="kn">import</span> <span class="n">CptData</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">CptData</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">BoreData</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">DEFAULT_COLUMN_WIDTH</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<div class="viewcode-block" id="Column"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.column.Column">[docs]</a><span class="k">class</span> <span class="nc">Column</span><span class="p">:</span>
+<div class="viewcode-block" id="Column.__init__"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.column.Column.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">classify</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]],</span>
+        <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;N/A&quot;</span><span class="p">,</span>
+        <span class="n">z</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">groundwater_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Holds the data related to a column in the profile.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        classify: dict</span>
+<span class="sd">            Dictionary that holds the classification data. Must</span>
+<span class="sd">            contain the following keys:</span>
+
+<span class="sd">                - depth</span>
+<span class="sd">                    Top of the layers [m REF]</span>
+<span class="sd">                - thickness</span>
+<span class="sd">                    Thickness of the layer [m]</span>
+<span class="sd">                - geotechnicalSoilName</span>
+<span class="sd">                    Soil code of the layer related to the NEN-EN-ISO 14688-1:2019+NEN 8990:2020 Tabel NA.17</span>
+
+<span class="sd">        Other Parameters</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        x: float</span>
+<span class="sd">            x coordinate of the column. Must be in a Cartesian coordinate system</span>
+<span class="sd">        y: float</span>
+<span class="sd">            x coordinate of the column. Must be in a Cartesian coordinate system</span>
+<span class="sd">        name: str, optional</span>
+<span class="sd">            default is N/A</span>
+<span class="sd">            Name of the location.</span>
+<span class="sd">        z: float, optional</span>
+<span class="sd">            Default is None</span>
+<span class="sd">            surface level of the column [m REF].</span>
+<span class="sd">        groundwater_level: float, optional</span>
+<span class="sd">            Default is None</span>
+<span class="sd">            groundwater level of the column [m REF].</span>
+<span class="sd">        data: dict</span>
+<span class="sd">            Default is None</span>
+<span class="sd">            Other data that can be added to the plot. If not None than dictionary</span>
+<span class="sd">            must contain the following key:</span>
+
+<span class="sd">                - depth</span>
+<span class="sd">                    Top of the layers [m REF]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># validate</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;thickness&quot;</span><span class="p">,</span> <span class="s2">&quot;geotechnicalSoilName&quot;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">classify</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="p">]</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Key missing in classify dictionary.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">classify</span><span class="p">[</span><span class="s2">&quot;depth&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">classify</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">classify</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Value arrays of classify dictionary do not have the same dimensions&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">classify</span><span class="p">[</span><span class="s2">&quot;geotechnicalSoilName&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CODING_SOIL_TYPES</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;geotechnicalSoilName `</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">` not in CODING_SOIL_TYPES [NEN-EN-ISO 14688-1:2019+NEN 8990:2020 &quot;</span>
+                    <span class="s2">&quot;Tabel NA.17] dictionary.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;depth&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">classify</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Key missing in data dictionary.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">classify</span><span class="p">[</span><span class="s2">&quot;depth&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">classify</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">classify</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Value arrays of data dictionary do not have the same dimensions&quot;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_classify</span> <span class="o">=</span> <span class="n">classify</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_z</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_groundwater_level</span> <span class="o">=</span> <span class="n">groundwater_level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="c1"># set optional attributes</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="Column.from_cpt"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.column.Column.from_cpt">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_cpt</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">gef</span><span class="p">:</span> <span class="n">CptData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Column&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use the cptcore response to translate the NEN6740 Table 2B to the NEN-EN-ISO 14688-1:2019+NEN 8990:2020 Tabel NA.17</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        response: dict</span>
+<span class="sd">            response of the CPT Core classify API call</span>
+<span class="sd">        gef: pygef.cpt.CptData</span>
+<span class="sd">            CPT object created by pygef.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Column</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">classify</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;depth&quot;</span><span class="p">:</span> <span class="n">gef</span><span class="o">.</span><span class="n">delivered_vertical_position_offset</span>
+            <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;upperBoundary&quot;</span><span class="p">)),</span>
+            <span class="s2">&quot;thickness&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lowerBoundary&quot;</span><span class="p">))</span>
+                <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;upperBoundary&quot;</span><span class="p">))</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="s2">&quot;geotechnicalSoilName&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;geotechnicalSoilName&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="s2">&quot;depth&quot;</span> <span class="ow">in</span> <span class="n">gef</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">gef</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;depth&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s2">&quot;depthOffset&quot;</span><span class="p">:</span> <span class="s2">&quot;depth&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">gef</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s2">&quot;depthOffset&quot;</span><span class="p">:</span> <span class="s2">&quot;depth&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">classify</span><span class="o">=</span><span class="n">classify</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">gef</span><span class="o">.</span><span class="n">delivered_location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">gef</span><span class="o">.</span><span class="n">delivered_location</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">gef</span><span class="o">.</span><span class="n">delivered_vertical_position_offset</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">gef</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">gef</span><span class="o">.</span><span class="n">bro_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">gef</span><span class="o">.</span><span class="n">bro_id</span><span class="p">,</span>
+            <span class="n">groundwater_level</span><span class="o">=</span><span class="n">gef</span><span class="o">.</span><span class="n">groundwater_level_offset</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Column.from_bore"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.column.Column.from_bore">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_bore</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">gef</span><span class="p">:</span> <span class="n">BoreData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Column&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform the BoreData DataClass to our Column class</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        gef: pygef.bore.BoreData</span>
+<span class="sd">            Bore object created by pygef.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Column</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">classify</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;depth&quot;</span><span class="p">:</span> <span class="n">gef</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="s2">&quot;upperBoundaryOffset&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+            <span class="s2">&quot;thickness&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">gef</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="s2">&quot;lowerBoundary&quot;</span><span class="p">)</span>
+                <span class="o">-</span> <span class="n">gef</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="s2">&quot;upperBoundary&quot;</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+            <span class="s2">&quot;geotechnicalSoilName&quot;</span><span class="p">:</span> <span class="n">gef</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span>
+                <span class="s2">&quot;geotechnicalSoilName&quot;</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">classify</span><span class="o">=</span><span class="n">classify</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">gef</span><span class="o">.</span><span class="n">delivered_location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">gef</span><span class="o">.</span><span class="n">delivered_location</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">gef</span><span class="o">.</span><span class="n">delivered_vertical_position_offset</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">gef</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">gef</span><span class="o">.</span><span class="n">bro_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">gef</span><span class="o">.</span><span class="n">bro_id</span><span class="p">,</span>
+            <span class="n">groundwater_level</span><span class="o">=</span><span class="n">gef</span><span class="o">.</span><span class="n">groundwater_level</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;x coordinate&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;y coordinate&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">z</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;surface level [m REF]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">groundwater_level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;groundwater level [m REF]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groundwater_level</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;column name&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">classify</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;dictionary that holds the classification data&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_classify</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;dictionary that holds the other data&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+<div class="viewcode-block" id="Column.plot"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.column.Column.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">figure</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Figure</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">hue</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;percentage&quot;</span><span class="p">,</span>
+        <span class="n">plot_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">x0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">d_left</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">d_right</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">fillpattern</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">profile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Figure</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a plotly figure with the Soil Layout and the Data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        figure: Figure, optional</span>
+<span class="sd">            Default is None</span>
+<span class="sd">            A plotly graph object.</span>
+<span class="sd">        hue: str, optional</span>
+<span class="sd">            default is percentage</span>
+<span class="sd">            enum : [&#39;percentage&#39;, &#39;uniform&#39;]</span>
+<span class="sd">            Show either the soil data in percentage or use a uniform color.</span>
+<span class="sd">        plot_kwargs: Dict, optional</span>
+<span class="sd">            Default is None</span>
+<span class="sd">            Dictionary with keys for properties to plot:</span>
+
+<span class="sd">            ``` python</span>
+
+<span class="sd">                {</span>
+
+<span class="sd">                    &quot;qc&quot;: {</span>
+
+<span class="sd">                            &quot;line_color&quot;: &quot;black&quot;,</span>
+
+<span class="sd">                            &quot;factor&quot;: 1,</span>
+
+<span class="sd">                        },</span>
+
+<span class="sd">                    &quot;fr&quot;: {&quot;line_color&quot;: &quot;red&quot;},</span>
+
+<span class="sd">                }</span>
+
+<span class="sd">            ```</span>
+
+<span class="sd">        x0: float, optional</span>
+<span class="sd">            Default is 0</span>
+<span class="sd">            The x-coordinate of the start of the Soil Layout plot</span>
+<span class="sd">        d_left: float, optional</span>
+<span class="sd">            Default is 0.5</span>
+<span class="sd">            The width of the Soil Layout plot left of the center line.</span>
+<span class="sd">            Only used when heu is not percentage. If percentage the sum of</span>
+<span class="sd">            d_right and d_left is DEFAULT_COLUMN_WIDTH.</span>
+<span class="sd">        d_right: float, optional</span>
+<span class="sd">            Default is 0.5</span>
+<span class="sd">            The width of the Soil Layout plot right of the center line.</span>
+<span class="sd">            Only used when heu is not percentage. If percentage the sum of</span>
+<span class="sd">            d_right and d_left is DEFAULT_COLUMN_WIDTH.</span>
+<span class="sd">        fillpattern:  bool, optional</span>
+<span class="sd">            Default is True</span>
+<span class="sd">            Fill the layers with the pattern related to the soil code of the</span>
+<span class="sd">            layer based on the NEN-EN-ISO 14688-1:2019+NEN 8990:2020 Tabel NA.17</span>
+<span class="sd">        profile: bool, optional</span>
+<span class="sd">            Default is False</span>
+<span class="sd">            Flag that indicates if plot is standalone or part on of a profile.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Figure</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">hue</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;percentage&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid value for heu.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># with of the column</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">d_left</span> <span class="o">+</span> <span class="n">d_right</span>
+        <span class="c1"># end of the column</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">dx</span>
+        <span class="c1"># center of the column</span>
+        <span class="n">x_center</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">d_left</span>
+
+        <span class="k">if</span> <span class="n">hue</span> <span class="o">==</span> <span class="s2">&quot;percentage&quot;</span><span class="p">:</span>
+            <span class="c1"># reset column to one meter width</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">DEFAULT_COLUMN_WIDTH</span>
+            <span class="n">x0</span> <span class="o">=</span> <span class="n">x_center</span> <span class="o">-</span> <span class="n">dx</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="k">if</span> <span class="n">figure</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># initialize plot</span>
+            <span class="n">figure</span> <span class="o">=</span> <span class="n">make_subplots</span><span class="p">(</span>
+                <span class="n">rows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">cols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">y_title</span><span class="o">=</span><span class="s2">&quot;Depth [m REF]&quot;</span><span class="p">,</span>
+                <span class="n">shared_yaxes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">horizontal_spacing</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+                <span class="n">column_widths</span><span class="o">=</span><span class="p">[</span><span class="n">dx</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">],</span>
+                <span class="n">subplot_titles</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">&quot;Soil Layout&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Data&quot;</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Add bars for each soil type separately in order to be able to set legend labels</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classify</span><span class="p">[</span><span class="s2">&quot;geotechnicalSoilName&quot;</span><span class="p">]):</span>
+            <span class="c1"># get index location of the soil code</span>
+            <span class="n">select</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classify</span><span class="p">[</span><span class="s2">&quot;geotechnicalSoilName&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="n">key</span>
+
+            <span class="c1"># illiterate of depth and add bar plot</span>
+            <span class="k">for</span> <span class="n">y0</span><span class="p">,</span> <span class="n">dy</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classify</span><span class="p">[</span><span class="s2">&quot;depth&quot;</span><span class="p">])[</span><span class="n">select</span><span class="p">],</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classify</span><span class="p">[</span><span class="s2">&quot;thickness&quot;</span><span class="p">])[</span><span class="n">select</span><span class="p">],</span>
+            <span class="p">):</span>
+                <span class="c1"># Based on the percentage of soil create the bar for every layer.</span>
+                <span class="k">if</span> <span class="n">hue</span> <span class="o">==</span> <span class="s2">&quot;percentage&quot;</span><span class="p">:</span>
+                    <span class="c1"># start of the bar per color.</span>
+                    <span class="n">x0_color</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">percentage</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+                        <span class="n">CODING_SOIL_TYPES</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">):</span>
+                        <span class="c1"># end of the bar per color.</span>
+                        <span class="n">x1_color</span> <span class="o">=</span> <span class="p">((</span><span class="n">percentage</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span> <span class="o">+</span> <span class="n">x0_color</span>
+
+                        <span class="n">figure</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+                            <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+                                <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+                                <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="n">x0_color</span><span class="p">,</span> <span class="n">x0_color</span><span class="p">,</span> <span class="n">x1_color</span><span class="p">,</span> <span class="n">x1_color</span><span class="p">,</span> <span class="n">x0_color</span><span class="p">],</span>
+                                <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="n">y0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">-</span> <span class="n">dy</span><span class="p">,</span> <span class="n">y0</span> <span class="o">-</span> <span class="n">dy</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y0</span><span class="p">],</span>
+                                <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s2">&quot;Name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&lt;br&gt;&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;Soil Type: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&lt;br&gt;&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;Top of layer: </span><span class="si">{</span><span class="n">y0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&lt;br&gt;&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;Bottom of layer: </span><span class="si">{</span><span class="n">y0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dy</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&lt;br&gt;&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;Thickness: </span><span class="si">{</span><span class="n">dy</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+                                <span class="p">),</span>
+                                <span class="n">hovertemplate</span><span class="o">=</span><span class="s2">&quot;%</span><span class="si">{text}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                <span class="n">legendgroup</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+                                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
+                                <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;toself&quot;</span><span class="p">,</span>
+                                <span class="n">fillcolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">),</span>
+                                <span class="n">showlegend</span><span class="o">=</span><span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">figure</span><span class="o">.</span><span class="n">data</span><span class="p">],</span>
+                                <span class="n">fillpattern</span><span class="o">=</span><span class="p">(</span>
+                                    <span class="n">CODING_SOIL_TYPES</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;pattern&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+                                    <span class="k">if</span> <span class="n">fillpattern</span>
+                                    <span class="k">else</span> <span class="kc">None</span>
+                                <span class="p">),</span>
+                            <span class="p">),</span>
+                            <span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">col</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+                        <span class="c1"># reset the start of the bar color.</span>
+                        <span class="n">x0_color</span> <span class="o">=</span> <span class="n">x1_color</span>
+
+                <span class="k">elif</span> <span class="n">hue</span> <span class="o">==</span> <span class="s2">&quot;uniform&quot;</span><span class="p">:</span>
+                    <span class="c1"># blend color based on the percentage</span>
+                    <span class="n">red</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                        <span class="nb">sum</span><span class="p">(</span>
+                            <span class="p">[</span>
+                                <span class="n">ImageColor</span><span class="o">.</span><span class="n">getcolor</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;RGB&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span>
+                                <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">CODING_SOIL_TYPES</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                            <span class="p">]</span>
+                        <span class="p">)</span>
+                        <span class="o">/</span> <span class="mi">100</span>
+                    <span class="p">)</span>
+                    <span class="n">green</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                        <span class="nb">sum</span><span class="p">(</span>
+                            <span class="p">[</span>
+                                <span class="n">ImageColor</span><span class="o">.</span><span class="n">getcolor</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;RGB&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span>
+                                <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">CODING_SOIL_TYPES</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                            <span class="p">]</span>
+                        <span class="p">)</span>
+                        <span class="o">/</span> <span class="mi">100</span>
+                    <span class="p">)</span>
+                    <span class="n">blue</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                        <span class="nb">sum</span><span class="p">(</span>
+                            <span class="p">[</span>
+                                <span class="n">ImageColor</span><span class="o">.</span><span class="n">getcolor</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;RGB&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span>
+                                <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">CODING_SOIL_TYPES</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                            <span class="p">]</span>
+                        <span class="p">)</span>
+                        <span class="o">/</span> <span class="mi">100</span>
+                    <span class="p">)</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%02x%02x%02x</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">)</span>
+
+                    <span class="n">figure</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+                        <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+                            <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x0</span><span class="p">],</span>
+                            <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="n">y0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">-</span> <span class="n">dy</span><span class="p">,</span> <span class="n">y0</span> <span class="o">-</span> <span class="n">dy</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y0</span><span class="p">],</span>
+                            <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&lt;br&gt;&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;Soil Type: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&lt;br&gt;&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;Top of layer: </span><span class="si">{</span><span class="n">y0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&lt;br&gt;&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;Bottom of layer: </span><span class="si">{</span><span class="n">y0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dy</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&lt;br&gt;&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;Thickness: </span><span class="si">{</span><span class="n">dy</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">),</span>
+                            <span class="n">hovertemplate</span><span class="o">=</span><span class="s2">&quot;%</span><span class="si">{text}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">legendgroup</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+                            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
+                            <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;toself&quot;</span><span class="p">,</span>
+                            <span class="n">fillcolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                            <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">),</span>
+                            <span class="n">showlegend</span><span class="o">=</span><span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">figure</span><span class="o">.</span><span class="n">data</span><span class="p">],</span>
+                            <span class="n">fillpattern</span><span class="o">=</span><span class="p">(</span>
+                                <span class="n">CODING_SOIL_TYPES</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;pattern&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="k">if</span> <span class="n">fillpattern</span>
+                                <span class="k">else</span> <span class="kc">None</span>
+                            <span class="p">),</span>
+                        <span class="p">),</span>
+                        <span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">col</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span>
+
+        <span class="c1"># plot other data</span>
+        <span class="k">if</span> <span class="n">plot_kwargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">plot_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2"> not in data dictionary </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># pop not needed plot kwargs</span>
+                <span class="n">scatter_kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">plot_kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;factor&quot;</span> <span class="ow">in</span> <span class="n">scatter_kwargs</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">scatter_kwargs</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;factor&quot;</span><span class="p">)</span>
+
+                <span class="c1"># add data to column</span>
+                <span class="n">figure</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+                    <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+                        <span class="n">name</span><span class="o">=</span><span class="n">item</span><span class="p">,</span>
+                        <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">])</span>
+                        <span class="o">*</span> <span class="n">plot_kwargs</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;factor&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="n">x_center</span><span class="p">,</span>
+                        <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;depth&quot;</span><span class="p">],</span>
+                        <span class="n">customdata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">],</span>
+                        <span class="n">hovertemplate</span><span class="o">=</span><span class="s2">&quot;%</span><span class="si">{customdata:.2f}</span><span class="s2">, %</span><span class="si">{y:.2f}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">legendgroup</span><span class="o">=</span><span class="n">item</span><span class="p">,</span>
+                        <span class="n">showlegend</span><span class="o">=</span><span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">figure</span><span class="o">.</span><span class="n">data</span><span class="p">],</span>
+                        <span class="o">**</span><span class="n">scatter_kwargs</span><span class="p">[</span><span class="n">item</span><span class="p">],</span>
+                    <span class="p">),</span>
+                    <span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">col</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <span class="n">profile</span> <span class="k">else</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Add dashed blue line representing phreatic level</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">groundwater_level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">profile</span><span class="p">:</span>
+            <span class="n">figure</span><span class="o">.</span><span class="n">add_hline</span><span class="p">(</span>
+                <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">groundwater_level</span><span class="p">,</span>
+                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;Blue&quot;</span><span class="p">,</span> <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                <span class="n">row</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+                <span class="n">col</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+                <span class="n">annotation_text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Phreatic level [m REF]: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">groundwater_level</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">annotation_position</span><span class="o">=</span><span class="s2">&quot;bottom right&quot;</span><span class="p">,</span>
+                <span class="n">annotation_font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">annotation_font_color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Add dashed brown line representing ground level</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">profile</span><span class="p">:</span>
+            <span class="n">figure</span><span class="o">.</span><span class="n">add_hline</span><span class="p">(</span>
+                <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">,</span>
+                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;Brown&quot;</span><span class="p">,</span> <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                <span class="n">row</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+                <span class="n">col</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+                <span class="n">annotation_text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;surface level [m REF]: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">annotation_position</span><span class="o">=</span><span class="s2">&quot;bottom right&quot;</span><span class="p">,</span>
+                <span class="n">annotation_font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">annotation_font_color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">profile</span><span class="p">:</span>
+            <span class="c1"># update figure</span>
+            <span class="n">figure</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">figure</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">showticklabels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">profile</span><span class="p">:</span>
+            <span class="c1"># add a vertical line to locate the column on the profile</span>
+            <span class="n">figure</span><span class="o">.</span><span class="n">add_vline</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">x_center</span><span class="p">,</span>
+                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;Black&quot;</span><span class="p">,</span> <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                <span class="n">row</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+                <span class="n">col</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+                <span class="n">annotation_text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">annotation_position</span><span class="o">=</span><span class="s2">&quot;top right&quot;</span><span class="p">,</span>
+                <span class="n">annotation_font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">annotation_font_color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                <span class="n">annotation_textangle</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">figure</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, CEMS BV.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
