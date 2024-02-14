@@ -407,7 +407,7 @@ class Column:
                     blue = int(
                         sum(
                             [
-                                ImageColor.getcolor(c, "RGB")[2] * p
+                                ImageColor.getcolor(c, "RGB")[2] * p  # type: ignore
                                 for c, p in CODING_SOIL_TYPES[key]["color"].items()
                             ]
                         )

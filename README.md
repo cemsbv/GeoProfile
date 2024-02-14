@@ -4,13 +4,13 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
-Explore the depths of the Earth with GeoProfileKit, a comprehensive package designed for geotechnical professionals and
+Explore the depths of the Earth with GeoProfileCore, a comprehensive package designed for geotechnical professionals and
 researchers. This versatile toolkit is your go-to resource for analyzing and visualizing geotechnical profiles, offering
 a seamless experience in understanding the complex stratigraphy of the subsurface.
 
-Whether you are involved in civil engineering, environmental science, or geotechnical exploration, GeoProfileKit is your
+Whether you are involved in civil engineering, environmental science, or geotechnical exploration, GeoProfileCore is your
 indispensable companion for unraveling the mysteries beneath the surface. Elevate your geotechnical analysis and make
-informed decisions with GeoProfileKit – where geology meets technology.
+informed decisions with GeoProfileCore – where geology meets technology.
 
 # Installation
 
@@ -62,8 +62,8 @@ You can get your token at: `https://cemsbv.crux-nuclei.com`
 We format our code with black and isort.
 
 ```bash
-black --config "pyproject.toml" src/geoprofilecore tests notebook
-isort --settings-path "pyproject.toml" src/geoprofilecore tests notebook
+black --config "pyproject.toml" src/geoprofilecore tests notebook docs
+isort --settings-path "pyproject.toml" src/geoprofilecore tests notebook docs
 ```
 
 ## Lint

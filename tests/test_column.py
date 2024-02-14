@@ -3,7 +3,7 @@ from plotly.graph_objs import Figure
 from geoprofilecore import Column
 
 
-def test_column_plot(classify_dict, data_dict):
+def test_column_plot(classify_dict: dict, data_dict: dict) -> None:
     column = Column(classify_dict, 0, 0)
     assert isinstance(column.plot(), Figure)
 

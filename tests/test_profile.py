@@ -6,7 +6,7 @@ from shapely.geometry import LineString
 from geoprofilecore import Column, Section
 
 
-def test_sorting(classify_dict):
+def test_sorting(classify_dict: dict) -> None:
     columns = [
         Column(classify_dict, 0, 0),
         Column(classify_dict, 10, 10),
@@ -38,7 +38,7 @@ def test_sorting(classify_dict):
     assert profile.sorting == ([0, 2, 1], (10 + 10))
 
 
-def test_selecting(classify_dict):
+def test_selecting(classify_dict: dict) -> None:
     columns = [
         Column(classify_dict, 0, 0),
         Column(classify_dict, 10, 10),
@@ -52,7 +52,7 @@ def test_selecting(classify_dict):
     assert len(profile.data_list_include) == 3
 
 
-def test_reprojecting(classify_dict):
+def test_reprojecting(classify_dict: dict) -> None:
     columns = [
         Column(classify_dict, 3, 1),
         Column(classify_dict, 9, 9),
@@ -69,7 +69,7 @@ def test_reprojecting(classify_dict):
     }
 
 
-def test_plot(classify_dict):
+def test_plot(classify_dict: dict) -> None:
     columns = [
         Column(classify_dict, 3, 1),
         Column(classify_dict, 9, 9),

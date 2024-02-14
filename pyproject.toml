@@ -69,12 +69,23 @@ disallow_untyped_calls = true
 warn_return_any = false
 no_implicit_reexport = true
 strict_equality = true
+exclude = "tests"
 
 [[tool.mypy.overrides]]
 module = [
     "numpy.*",
     "pytest.*",
     "setuptools.*",
+    "matplotlib.*",
+    "geopandas.*",
+    "contextily.*",
+    "skspatial.*",
+    "shapely.*",
+    "scipy.*",
+    "python_tsp.*",
+    "plotly.*",
+    "pygef.*",
+    "nuclei/*",
 ]
 ignore_missing_imports = true
 
