@@ -118,7 +118,7 @@ mistune==0.8.4
     # via m2r2
 mypy-extensions==1.0.0
     # via black
-networkx==2.8.8
+networkx==3.2.1
     # via tsplib95
 numpy==1.26.4
     # via
