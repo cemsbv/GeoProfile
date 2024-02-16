@@ -1,3 +1,5 @@
+import io
+
 import plotly
 import plotly.io as pio
 import pygef
@@ -14,38 +16,46 @@ client = NucleiClient()
 author = "N. Uclei"
 project_name = "Profile"
 project_number = "6169"
-profile_line = LineString([[125015, 477692], [127464, 470809], [127603, 464535]])
+profile_line = LineString([[127667, 469200], [127661, 468215]])
 
+# ** cpt_selection
+# Specify a list of CPTs names (i.e. BRO ID).
+cpt_selection = [
+    "CPT000000018920",
+    "CPT000000018949",
+    "CPT000000018938",
+    "CPT000000018927",
+    "CPT000000018939",
+    "CPT000000018928",
+]
 
-# get all project ID's
-projects = client.session.get(
-    url="https://datalake.cemsbv.io/datalake/api/v1/admin/projects"
-)
+# ** classify_metode:
+# Metode used to classify CPT data.
+# Accepted values: ["beenJefferies", "machineLearning", "nen", "table", "robertson", "table"]
+classify_metode = "robertson"
 
-# find project ID of your project name
-project_id = [i["id"] for i in projects.json() if i["number"] == str(project_number)][0]
-
-# get all files metadata related to your project
-files = client.session.get(
-    url=f"https://datalake.cemsbv.io/datalake/api/v1/admin/projects/{project_id}/files"
-)
-
-# loop over the files metadata and fetch file from DataLake
-cpt_files = []
-for file in tqdm(files.json()):
-    # only download application/cpt files
-    if file["mime"].startswith("application/cpt"):
-        cpt_files.append(
-            client.session.get(
-                url=f'https://datalake.cemsbv.io/datalake/api/v1/admin/files/{file["id"]}'
-            ).text
+# Get CPTs
+# loop over the cpt id's and fetch file from BRO
+cptdata_objects = []
+for file_metadata in tqdm(cpt_selection, desc="Download CPT's from BRO"):
+    # download CPT from BRO
+    response = client.session.get(
+        url=f"https://publiek.broservices.nl/sr/cpt/v1/objects/{file_metadata}"
+    )
+    if not response.ok:
+        print(
+            f"RuntimeError: {file_metadata} could not be downloaded from de BRO server. \n Status code: {response.status_code}"
         )
+        continue
+
+    cpt = pygef.read_cpt(io.BytesIO(response.content))
+    object.__setattr__(cpt, "alias", file_metadata)
+    object.__setattr__(cpt, "data", cpt.data.drop_nulls())
+    cptdata_objects.append(cpt)
 
 # create columns
 columns = []
-for file in tqdm(cpt_files):
-    # parse GEF file
-    gef = pygef.read_cpt(file)
+for gef in tqdm(cptdata_objects):
 
     # drop non-unique elements
     data = gef.data.unique(subset="penetrationLength", maintain_order=True)
@@ -54,7 +64,7 @@ for file in tqdm(cpt_files):
     schema = {
         "aggregateLayersPenalty": 3,
         "data": {
-            "coneResistance": data.get_column("coneResistance").to_list(),
+            "coneResistance": data.get_column("coneResistance").clip(0, 1e10).to_list(),
             "correctedPenetrationLength": data.get_column(
                 "penetrationLength"
             ).to_list(),
@@ -65,7 +75,7 @@ for file in tqdm(cpt_files):
         "y": gef.delivered_location.y,
     }
     response = client.session.post(
-        "https://crux-nuclei.com/api/cptcore/v1/classify/machineLearning",
+        f"https://crux-nuclei.com/api/cptcore/v1/classify/{classify_metode}",
         json=schema,
         headers={"Content-Type": "application/json"},
     )
@@ -85,7 +95,6 @@ profile = Section(
 
 # create a map of the line and CPT's
 profile.plot_map(add_basemap=False, add_tags=True, debug=True)
-
 
 # create a profile
 fig = profile.plot(
