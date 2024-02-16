@@ -395,7 +395,7 @@ class Section:
             if ctx is None:
                 raise ImportError("No module named 'contextily'")
             ctx.add_basemap(
-                axis, crs="EPSG:28992", source=ctx.providers.Stamen.TonerLite
+                axis, crs="EPSG:28992", source=ctx.providers.OpenStreetMap.Mapnik
             )
         axis.ticklabel_format(useOffset=False, style="plain")
         plt.tight_layout()
