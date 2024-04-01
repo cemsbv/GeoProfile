@@ -86,7 +86,7 @@ imagesize==1.4.1
     # via sphinx
 iniconfig==2.0.0
     # via pytest
-ipython==7.30.1
+ipython==8.23.0
     # via GeoProfileCore (pyproject.toml)
 isort==5.13.2
     # via GeoProfileCore (pyproject.toml)
