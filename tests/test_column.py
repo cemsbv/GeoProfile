@@ -1,6 +1,6 @@
 from plotly.graph_objs import Figure
 
-from geoprofilecore import Column
+from geoprofile import Column
 
 
 def test_column_plot(classify_dict: dict, data_dict: dict) -> None:

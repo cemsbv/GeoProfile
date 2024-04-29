@@ -1,5 +1,6 @@
 import io
 
+import matplotlib.pyplot as plt
 import plotly
 import plotly.io as pio
 import pygef
@@ -7,7 +8,7 @@ from nuclei.client import NucleiClient
 from shapely.geometry import LineString
 from tqdm import tqdm
 
-from geoprofilecore import Column, Section
+from geoprofile import Column, Section
 
 pio.renderers.default = "browser"
 
@@ -31,8 +32,8 @@ cpt_selection = [
 
 # ** classify_metode:
 # Metode used to classify CPT data.
-# Accepted values: ["beenJefferies", "machineLearning", "nen", "table", "robertson", "table"]
-classify_metode = "robertson"
+# Accepted values: ["beenJefferies", "machineLearning", "nen", "table", "robertson", "ntype"]
+classify_metode = "ntype"
 
 # Get CPTs
 # loop over the cpt id's and fetch file from BRO
@@ -94,22 +95,24 @@ profile = Section(
 )
 
 # create a map of the line and CPT's
-profile.plot_map(add_basemap=False, add_tags=True, debug=True)
+axis = profile.plot_map(add_basemap=True, add_tags=True, debug=False)
+plt.savefig("map.png")
 
 # create a profile
 fig = profile.plot(
     plot_kwargs={
-        "coneResistance": {"line_color": "black"},
-        "localFriction": {"line_color": "red", "factor": 10},
+        "coneResistance": {"line_color": "black", "factor": 2},
+        "frictionRatioComputed": {"line_color": "red", "factor": 4},
+        "porePressureU2": {"line_color": "blue", "factor": 100},
     },
     hue="uniform",
     fillpattern=False,
-    surface_level=True,
-    groundwater_level=True,
+    surface_level=False,
+    groundwater_level=False,
 )
 # html file
 _ = plotly.offline.plot(fig, filename=project_number + " " + project_name + ".html")
 
 # png file
-fig.update_layout(showlegend=False)
-# fig.write_image("profile_A2.png", width=1900, height=937)
+# fig.update_layout(showlegend=False)
+fig.write_image("profile_A2.png", width=1900, height=937)

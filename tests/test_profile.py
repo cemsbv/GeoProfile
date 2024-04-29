@@ -3,7 +3,7 @@ import numpy as np
 import plotly.graph_objs as go
 from shapely.geometry import LineString
 
-from geoprofilecore import Column, Section
+from geoprofile import Column, Section
 
 
 def test_sorting(classify_dict: dict) -> None:

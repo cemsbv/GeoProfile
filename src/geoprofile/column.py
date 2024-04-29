@@ -8,7 +8,7 @@ from plotly import graph_objects as go
 from plotly.graph_objects import Figure
 from plotly.subplots import make_subplots
 
-from geoprofilecore.constant import CODING_SOIL_TYPES
+from geoprofile.constant import CODING_SOIL_TYPES
 
 # optional import
 try:

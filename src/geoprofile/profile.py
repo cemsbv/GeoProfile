@@ -12,7 +12,7 @@ from shapely.geometry import LineString, Point
 from skspatial.objects import Line
 from tqdm import tqdm
 
-from geoprofilecore.column import Column
+from geoprofile.column import Column
 
 # optional imports
 try:

@@ -2,7 +2,7 @@
 Getting started
 ===============
 
-The easiest way to get started with GeoProfileCore is in the **Jupyter Notebook**.
+The easiest way to get started with GeoProfile is in the **Jupyter Notebook**.
 
 Installation
 ------------
@@ -10,21 +10,21 @@ To install this package, including the `map` and `gef` reading functionality, ru
 
 .. code-block::
 
-    pip install geoprofilecore[map, gef]
+    pip install geoprofile[map, gef]
 
 
-To skip the installation of the `GeoProfileCore` library, in case you do not need it (e.g. only use pure plotting), run:
+To skip the installation of the `GeoProfile` library, in case you do not need it (e.g. only use pure plotting), run:
 
 .. code-block::
 
-    pip install geoprofilecore
+    pip install geoprofile
 
 Than you can import proficore as follows:
 
 .. ipython:: python
 
-    from geoprofilecore.column import Column
-    from geoprofilecore.profile import Section
+    from geoprofile.column import Column
+    from geoprofile.profile import Section
 
     import numpy as np
     import plotly.io as pio
@@ -36,7 +36,7 @@ Create Columns
 ---------------
 
 The first thing to do is to create column classes. This class holds the information of the for
-example a CPT or borehole. For more information on the :func:`geoprofilecore.column.Column` class go
+example a CPT or borehole. For more information on the :func:`geoprofile.column.Column` class go
 the the reference.
 
 
@@ -174,7 +174,7 @@ Create Profile
 ----------------
 
 The next step is to create a Section class. This class holds the information of all Columns.
-For more information on the :func:`geoprofilecore.column.Section` class go
+For more information on the :func:`geoprofile.column.Section` class go
 the the reference.
 
 .. ipython:: python

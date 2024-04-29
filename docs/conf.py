@@ -11,14 +11,14 @@ sys.path.insert(0, os.path.abspath(".."))
 os.environ["DOC_PATH"] = os.path.dirname(__file__)
 
 
-project = "GeoProfileCore"
+project = "GeoProfile"
 copyright = "2024, CEMS BV"
 author = "CEMS"
 
 # The full version, including alpha/beta/rc tags
-import geoprofilecore  # noqa: E402 F403 F401
+import geoprofile  # noqa: E402 F403 F401
 
-release = geoprofilecore.__version__
+release = geoprofile.__version__
 
 # 'sphinx.ext.napoleon' Used for numpy docstring support
 extensions = [

@@ -1,4 +1,4 @@
-Welcome to GeoProfileCore's documentation!
+Welcome to GeoProfile's documentation!
 ============================================
 
 Indices and tables

@@ -1,29 +1,29 @@
-# GeoProfileCore
+# GeoProfile
 
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
-Explore the depths of the Earth with GeoProfileCore, a comprehensive package designed for geotechnical professionals and
+Explore the depths of the Earth with GeoProfile, a comprehensive package designed for geotechnical professionals and
 researchers. This versatile toolkit is your go-to resource for analyzing and visualizing geotechnical profiles, offering
 a seamless experience in understanding the complex stratigraphy of the subsurface.
 
-Whether you are involved in civil engineering, environmental science, or geotechnical exploration, GeoProfileCore is your
+Whether you are involved in civil engineering, environmental science, or geotechnical exploration, GeoProfile is your
 indispensable companion for unraveling the mysteries beneath the surface. Elevate your geotechnical analysis and make
-informed decisions with GeoProfileCore – where geology meets technology.
+informed decisions with GeoProfile – where geology meets technology.
 
 # Installation
 
 To install this package, including the `map` and `gef` reading functionality, run:
 
 ```bash
-pip install geoprofilecore[map, gef]
+pip install geoprofile[map, gef]
 ```
 
-To skip the installation of the `GeoProfileCore` library, in case you do not need it (e.g. only use pure plotting), run:
+To skip the installation of the `GeoProfile` library, in case you do not need it (e.g. only use pure plotting), run:
 
 ```bash
-pip install geoprofilecore
+pip install geoprofile
 ```
 
 # Contribution
@@ -62,8 +62,8 @@ You can get your token at: `https://cemsbv.crux-nuclei.com`
 We format our code with black and isort.
 
 ```bash
-black --config "pyproject.toml" src/geoprofilecore tests notebook docs
-isort --settings-path "pyproject.toml" src/geoprofilecore tests notebook docs
+black --config "pyproject.toml" src/geoprofile tests notebook docs
+isort --settings-path "pyproject.toml" src/geoprofile tests notebook docs
 ```
 
 ## Lint
