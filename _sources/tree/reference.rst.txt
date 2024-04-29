@@ -3,7 +3,7 @@ Reference
 
 Column
 ------
-.. autoclass:: geoprofilecore.column.Column
+.. autoclass:: geoprofile.column.Column
     :members:
     :inherited-members:
 
@@ -11,7 +11,7 @@ Column
 
 CrossSection
 -------------
-.. autoclass:: geoprofilecore.profile.Section
+.. autoclass:: geoprofile.profile.Section
     :members:
     :inherited-members:
 

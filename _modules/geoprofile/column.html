@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>geoprofilecore.column &mdash; GeoProfileCore 0.1.0 documentation</title>
+  <title>geoprofile.column &mdash; GeoProfile 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/index.css" type="text/css" />
@@ -28,7 +28,7 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            GeoProfileCore
+            GeoProfile
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -50,7 +50,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">GeoProfileCore</a>
+          <a href="../../index.html">GeoProfile</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -59,7 +59,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">geoprofilecore.column</li>
+      <li class="breadcrumb-item active">geoprofile.column</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -68,7 +68,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for geoprofilecore.column</h1><div class="highlight"><pre>
+  <h1>Source code for geoprofile.column</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
@@ -79,7 +79,7 @@
 <span class="kn">from</span> <span class="nn">plotly.graph_objects</span> <span class="kn">import</span> <span class="n">Figure</span>
 <span class="kn">from</span> <span class="nn">plotly.subplots</span> <span class="kn">import</span> <span class="n">make_subplots</span>
 
-<span class="kn">from</span> <span class="nn">geoprofilecore.constant</span> <span class="kn">import</span> <span class="n">CODING_SOIL_TYPES</span>
+<span class="kn">from</span> <span class="nn">geoprofile.constant</span> <span class="kn">import</span> <span class="n">CODING_SOIL_TYPES</span>
 
 <span class="c1"># optional import</span>
 <span class="k">try</span><span class="p">:</span>
@@ -92,8 +92,8 @@
 <span class="n">DEFAULT_COLUMN_WIDTH</span> <span class="o">=</span> <span class="mi">1</span>
 
 
-<div class="viewcode-block" id="Column"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.column.Column">[docs]</a><span class="k">class</span> <span class="nc">Column</span><span class="p">:</span>
-<div class="viewcode-block" id="Column.__init__"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.column.Column.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="Column"><a class="viewcode-back" href="../../tree/reference.html#geoprofile.column.Column">[docs]</a><span class="k">class</span> <span class="nc">Column</span><span class="p">:</span>
+<div class="viewcode-block" id="Column.__init__"><a class="viewcode-back" href="../../tree/reference.html#geoprofile.column.Column.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">classify</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]],</span>
         <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -188,7 +188,7 @@
             <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span></div>
 
-<div class="viewcode-block" id="Column.from_cpt"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.column.Column.from_cpt">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Column.from_cpt"><a class="viewcode-back" href="../../tree/reference.html#geoprofile.column.Column.from_cpt">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_cpt</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">gef</span><span class="p">:</span> <span class="n">CptData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Column&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use the cptcore response to translate the NEN6740 Table 2B to the NEN-EN-ISO 14688-1:2019+NEN 8990:2020 Tabel NA.17</span>
@@ -233,7 +233,7 @@
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Column.from_bore"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.column.Column.from_bore">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Column.from_bore"><a class="viewcode-back" href="../../tree/reference.html#geoprofile.column.Column.from_bore">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_bore</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">gef</span><span class="p">:</span> <span class="n">BoreData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Column&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transform the BoreData DataClass to our Column class</span>
@@ -302,7 +302,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;dictionary that holds the other data&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
 
-<div class="viewcode-block" id="Column.plot"><a class="viewcode-back" href="../../tree/reference.html#geoprofilecore.column.Column.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
+<div class="viewcode-block" id="Column.plot"><a class="viewcode-back" href="../../tree/reference.html#geoprofile.column.Column.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">figure</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Figure</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">hue</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;percentage&quot;</span><span class="p">,</span>
