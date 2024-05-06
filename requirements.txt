@@ -49,7 +49,7 @@ contextily==1.5.0
     # via GeoProfileCore (pyproject.toml)
 contourpy==1.2.0
     # via matplotlib
-coverage==6.5.0
+coverage==7.5.1
     # via coveralls
 coveralls==3.3.1
     # via GeoProfileCore (pyproject.toml)
