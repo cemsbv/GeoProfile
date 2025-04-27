@@ -20,7 +20,7 @@ backcall==0.2.0
     # via ipython
 black==24.2.0
     # via GeoProfileCore (pyproject.toml)
-certifi==2024.2.2
+certifi==2024.7.4
     # via
     #   fiona
     #   pyproj
