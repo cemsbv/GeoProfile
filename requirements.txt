@@ -68,7 +68,7 @@ docutils==0.18.1
     #   sphinx-rtd-theme
 exceptiongroup==1.2.0
     # via pytest
-fiona==1.9.5
+fiona==1.10.0
     # via geopandas
 fonttools==4.48.1
     # via matplotlib
