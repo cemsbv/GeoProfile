@@ -18,7 +18,7 @@ babel==2.14.0
     # via sphinx
 backcall==0.2.0
     # via ipython
-black==24.2.0
+black==24.3.0
     # via GeoProfileCore (pyproject.toml)
 certifi==2024.2.2
     # via
