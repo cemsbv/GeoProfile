@@ -250,7 +250,7 @@ tomli==2.0.1
     # via
     #   black
     #   pytest
-tqdm==4.66.2
+tqdm==4.66.3
     # via GeoProfileCore (pyproject.toml)
 traitlets==5.14.1
     # via
