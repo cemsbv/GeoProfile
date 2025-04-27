@@ -193,7 +193,7 @@ pytz==2024.1
     # via pandas
 rasterio==1.3.9
     # via contextily
-requests==2.31.0
+requests==2.32.2
     # via
     #   contextily
     #   coveralls
