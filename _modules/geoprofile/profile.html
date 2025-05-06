@@ -1,19 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>geoprofile.profile &mdash; GeoProfile 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/index.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/index.css?v=a925da5d" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -69,28 +71,28 @@
            <div itemprop="articleBody">
              
   <h1>Source code for geoprofile.profile</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
-<span class="kn">from</span> <span class="nn">plotly</span> <span class="kn">import</span> <span class="n">graph_objects</span> <span class="k">as</span> <span class="n">go</span>
-<span class="kn">from</span> <span class="nn">plotly.graph_objs</span> <span class="kn">import</span> <span class="n">Figure</span>
-<span class="kn">from</span> <span class="nn">plotly.subplots</span> <span class="kn">import</span> <span class="n">make_subplots</span>
-<span class="kn">from</span> <span class="nn">python_tsp.exact</span> <span class="kn">import</span> <span class="n">solve_tsp_dynamic_programming</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">spatial</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span>
-<span class="kn">from</span> <span class="nn">skspatial.objects</span> <span class="kn">import</span> <span class="n">Line</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plotly</span><span class="w"> </span><span class="kn">import</span> <span class="n">graph_objects</span> <span class="k">as</span> <span class="n">go</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plotly.graph_objs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">plotly.subplots</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_subplots</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">python_tsp.exact</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_tsp_dynamic_programming</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">spatial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">skspatial.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">from</span> <span class="nn">geoprofile.column</span> <span class="kn">import</span> <span class="n">Column</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">geoprofile.column</span><span class="w"> </span><span class="kn">import</span> <span class="n">Column</span>
 
 <span class="c1"># optional imports</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">contextily</span> <span class="k">as</span> <span class="nn">ctx</span>
-    <span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
-    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-    <span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="n">Axes</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">contextily</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ctx</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">ctx</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">gpd</span> <span class="o">=</span> <span class="kc">None</span>
@@ -98,8 +100,12 @@
     <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="Section"><a class="viewcode-back" href="../../tree/reference.html#geoprofile.profile.Section">[docs]</a><span class="k">class</span> <span class="nc">Section</span><span class="p">:</span>
-<div class="viewcode-block" id="Section.__init__"><a class="viewcode-back" href="../../tree/reference.html#geoprofile.profile.Section.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="Section">
+<a class="viewcode-back" href="../../tree/reference.html#geoprofile.profile.Section">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Section</span><span class="p">:</span>
+<div class="viewcode-block" id="Section.__init__">
+<a class="viewcode-back" href="../../tree/reference.html#geoprofile.profile.Section.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Column</span><span class="p">],</span>
         <span class="n">profile_line</span><span class="p">:</span> <span class="n">LineString</span><span class="p">,</span>
@@ -152,38 +158,39 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">y</span><span class="p">)),</span> <span class="n">data_list</span><span class="p">))):</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No unique coordinates in columns&quot;</span><span class="p">)</span></div>
 
+
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">reproject</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reproject</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;reproject points of the column onto the profile line.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reproject</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">profile_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LineString</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">profile_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LineString</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;profile line of the scoss section.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_profile_line</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">data_list_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Column</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data_list_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Column</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;all columns provided by initializing the class&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_list</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;buffer distance use to include columns in the profile [m]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sorting_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sorting_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;sorting algorithm used to sort columns to profile line&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorting_algorithm</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">profile_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LineString</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">profile_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LineString</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;polygon create based on the profile line and the buffer argument&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">cap_style</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">join_style</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">coordinates_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coordinates_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;list of coordinates of the all the column locations&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="nb">list</span><span class="p">(</span>
@@ -195,7 +202,7 @@
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">coordinates_include</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coordinates_include</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;list of coordinates of the selected column locations&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="nb">list</span><span class="p">(</span>
@@ -207,7 +214,7 @@
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">data_list_include</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Column</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data_list_include</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Column</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;selected columns based on profile polygon&quot;&quot;&quot;</span>
 
         <span class="n">data_list_include</span> <span class="o">=</span> <span class="p">[]</span>
@@ -223,7 +230,7 @@
         <span class="k">return</span> <span class="n">data_list_include</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">distance_matrix_include</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distance_matrix_include</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the distance matrix. Returns the matrix of all pair-wise distances [m].&quot;&quot;&quot;</span>
         <span class="n">distance_matrix</span> <span class="o">=</span> <span class="n">spatial</span><span class="o">.</span><span class="n">distance_matrix</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">,</span>
@@ -232,7 +239,7 @@
         <span class="k">return</span> <span class="n">distance_matrix</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">distance_matrix_include_reprojection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distance_matrix_include_reprojection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the distance matrix. Returns the matrix of all pair-wise distances [m].&quot;&quot;&quot;</span>
 
         <span class="c1"># make sure the data list order is consistent</span>
@@ -248,7 +255,7 @@
         <span class="k">return</span> <span class="n">distance_matrix</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">start_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Closed column point on the start of the profile line&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">spatial</span><span class="o">.</span><span class="n">distance_matrix</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">,</span>
@@ -256,7 +263,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">end_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">end_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Closed column point on the end of the profile line&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">spatial</span><span class="o">.</span><span class="n">distance_matrix</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">,</span>
@@ -264,7 +271,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">coordinates_include_reprojection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coordinates_include_reprojection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;list of coordinates of the selected column locations reprojected on the profile line&quot;&quot;&quot;</span>
 
         <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">xy</span><span class="p">))</span>
@@ -285,7 +292,7 @@
         <span class="k">return</span> <span class="n">projected_point</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sorting</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sorting</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Based on the soring algorithm the columns are sorted.</span>
 
@@ -365,7 +372,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span>
 
-<div class="viewcode-block" id="Section.plot_map"><a class="viewcode-back" href="../../tree/reference.html#geoprofile.profile.Section.plot_map">[docs]</a>    <span class="k">def</span> <span class="nf">plot_map</span><span class="p">(</span>
+<div class="viewcode-block" id="Section.plot_map">
+<a class="viewcode-back" href="../../tree/reference.html#geoprofile.profile.Section.plot_map">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_map</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">add_basemap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -472,7 +481,10 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">axis</span></div>
 
-<div class="viewcode-block" id="Section.plot"><a class="viewcode-back" href="../../tree/reference.html#geoprofile.profile.Section.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Section.plot">
+<a class="viewcode-back" href="../../tree/reference.html#geoprofile.profile.Section.plot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">figure</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Figure</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">x0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
@@ -637,7 +649,9 @@
                     <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="n">figure</span></div></div>
+        <span class="k">return</span> <span class="n">figure</span></div>
+</div>
+
 </pre></div>
 
            </div>
