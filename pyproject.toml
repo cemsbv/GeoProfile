@@ -29,6 +29,7 @@ map = [
     "matplotlib>=3.10.1,<4",
 ]
 gef = ["pygef>=0.11.1,<0.12"]
+notebook = ["cems-nuclei[client]>=3.0.0, <4"]
 test = ["coveralls", "pytest"]
 docs = [
     "Sphinx==8.2.3",
