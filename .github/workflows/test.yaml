@@ -18,9 +18,9 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - '3.9'
-          - '3.10'
-          - '3.11'
+          - "3.11"
+          - "3.12"
+          - "3.13"
     steps:
       - uses: actions/checkout@v3
 
@@ -52,7 +52,7 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           parallel-finished: true
-          carryforward: run-3.9
+          carryforward: run-3.11
 
   lint:
     name: Formatting check
@@ -91,10 +91,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install python 3.9
+      - name: Install python 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.11
 
       - name: Install dependencies
         run: |

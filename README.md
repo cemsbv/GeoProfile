@@ -30,14 +30,14 @@ pip install geoprofile
 
 ## Environment
 
-We recommend developing in Python3.9 with a clean virtual environment (using `virtualenv` or `conda`), installing the
+We recommend developing in Python3.12 with a clean virtual environment (using `virtualenv` or `conda`), installing the
 requirements from the requirements.txt file:
 
 Example using `virtualenv` and `pip` to install the dependencies in a new environment .env on Linux:
 
 ```bash
 python -m venv .env
-source activate .env/bin/activate
+source .env/bin/activate
 python -m pip install --upgrade pip setuptools
 pip install -r requirements.txt
 pip install -e .

@@ -8,14 +8,14 @@ on:
 jobs:
   deploy_docs:
     name: Deploy docs
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install python 3.9
+      - name: Install python 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.11
 
       - name: Install dependencies
         run: |
