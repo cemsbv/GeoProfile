@@ -29,14 +29,20 @@ map = [
     "matplotlib>=3.10.1,<4",
 ]
 gef = ["pygef>=0.11.1,<0.12"]
-notebook = ["cems-nuclei[client]>=3.0.0, <4"]
-test = ["coveralls", "pytest"]
+notebook = ["cems-nuclei[client]>=3.0.0,<4"]
+test = [
+    # coveralls is fixed to 3.3.1, because there is no support for python 3.13
+    # in further versions
+    "coveralls==3.3.1", 
+    "pytest>=8.3.5,<9"
+]
 docs = [
     "Sphinx==8.2.3",
     "sphinx-autodoc-typehints==3.1.0",
     "ipython==9.1.0",
     "asteroid-sphinx-theme==0.0.3",
-    "sphinx_rtd_theme==3.0.2"
+    "sphinx_rtd_theme==3.0.2",
+    "m2r2>=0.3.4,<0.4",
 ]
 lint = [
     "ansible-lint==25.1.3",
