@@ -86,7 +86,7 @@ coverage==6.5.0
     # via coveralls
 coveralls==3.3.1
     # via GeoProfile (pyproject.toml)
-cpplint==2.0.0
+cpplint==2.0.2
     # via GeoProfile (pyproject.toml)
 cryptography==44.0.3
     # via ansible-core
