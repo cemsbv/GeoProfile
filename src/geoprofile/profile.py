@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -52,11 +52,9 @@ class Section:
             Default is nearest_neighbor.
             Define the sorting algorithm use to sort the data points.
             Can be one of the following:
-
                 - tsp (traveling salesman problem)
                 - nearest_neighbor
                 - custom
-
         reproject: bool, optional
             Default is True
             Reproject points of the column onto the profile line.
@@ -299,7 +297,8 @@ class Section:
         axis: Optional[Axes] = None,
         add_basemap: bool = False,
         add_tags: bool = True,
-        debug: bool = False,
+        tag_type: Literal["name", "index"] = "name",
+        show_all: bool = False,
     ) -> Axes:
         """
         Create a map that contain the following:
@@ -318,7 +317,13 @@ class Section:
             Flag that includes basemap in figure.
         add_tags : bool, optional
             default is True
-            Show the CTP names as tags on the map
+            Show the CPT names or indices as tags on the map.
+        tag_type : str, optional
+            default is "name"
+            Type of tag to show on the map. Can be either "name" or "index".
+        show_all : bool, optional
+            default is False
+            Show all columns on the map, not just the selected ones.
 
         Returns
         -------
@@ -380,11 +385,14 @@ class Section:
 
         # add labels (column names) to map
         if add_tags:
+            if tag_type not in ["name", "index"]:
+                raise ValueError("tag_type must be either 'name' or 'index'")
+
             for i, item in enumerate(
-                self.data_list_include if debug else self.data_list_all
+                self.data_list_include if not show_all else self.data_list_all
             ):
                 axis.annotate(
-                    i if debug else item.name,
+                    str(i) if tag_type == "index" else item.name,
                     xy=(item.x, item.y),
                     xytext=(3, 3),
                     textcoords="offset points",

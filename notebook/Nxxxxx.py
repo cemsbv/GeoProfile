@@ -95,7 +95,9 @@ profile = Section(
 )
 
 # create a map of the line and CPT's
-axis = profile.plot_map(add_basemap=True, add_tags=True, debug=False)
+axis = profile.plot_map(
+    add_basemap=True, add_tags=True, tag_type="index", show_all=False
+)
 plt.savefig("map.png")
 
 # create a profile
