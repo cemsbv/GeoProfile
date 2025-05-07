@@ -245,24 +245,13 @@ A plotly graph object.</p></li>
 enum : [‘percentage’, ‘uniform’]
 Show either the soil data in percentage or use a uniform color.</p></li>
 <li><p><strong>plot_kwargs</strong> (<em>Dict</em><em>, </em><em>optional</em>) – <p>Default is None
-Dictionary with keys for properties to plot:</p>
-<p><a href="#id1"><span class="problematic" id="id2">``</span></a>` python</p>
+Dictionary with keys for properties to plot.
+Example: {</p>
 <blockquote>
-<div><p>{</p>
-<blockquote>
-<div><p>“qc”: {</p>
-<blockquote>
-<div><blockquote>
-<div><p>“line_color”: “black”,</p>
-<p>”factor”: 1,</p>
-</div></blockquote>
-<p>},</p>
-</div></blockquote>
-<p>”fr”: {“line_color”: “red”},</p>
+<div><p>”coneResistance”: {“line_color”: “black”},
+“localFriction”: {“line_color”: “red”, “factor”: 10},</p>
 </div></blockquote>
 <p>}</p>
-</div></blockquote>
-<p><a href="#id3"><span class="problematic" id="id4">``</span></a><a href="#id5"><span class="problematic" id="id6">`</span></a></p>
 </p></li>
 <li><p><strong>x0</strong> (<em>float</em><em>, </em><em>optional</em>) – Default is 0
 The x-coordinate of the start of the Soil Layout plot</p></li>

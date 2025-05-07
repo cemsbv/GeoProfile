@@ -342,26 +342,11 @@
 <span class="sd">            Show either the soil data in percentage or use a uniform color.</span>
 <span class="sd">        plot_kwargs: Dict, optional</span>
 <span class="sd">            Default is None</span>
-<span class="sd">            Dictionary with keys for properties to plot:</span>
-
-<span class="sd">            ``` python</span>
-
-<span class="sd">                {</span>
-
-<span class="sd">                    &quot;qc&quot;: {</span>
-
-<span class="sd">                            &quot;line_color&quot;: &quot;black&quot;,</span>
-
-<span class="sd">                            &quot;factor&quot;: 1,</span>
-
-<span class="sd">                        },</span>
-
-<span class="sd">                    &quot;fr&quot;: {&quot;line_color&quot;: &quot;red&quot;},</span>
-
-<span class="sd">                }</span>
-
-<span class="sd">            ```</span>
-
+<span class="sd">            Dictionary with keys for properties to plot.</span>
+<span class="sd">            Example: {</span>
+<span class="sd">                &quot;coneResistance&quot;: {&quot;line_color&quot;: &quot;black&quot;},</span>
+<span class="sd">                &quot;localFriction&quot;: {&quot;line_color&quot;: &quot;red&quot;, &quot;factor&quot;: 10},</span>
+<span class="sd">            }</span>
 <span class="sd">        x0: float, optional</span>
 <span class="sd">            Default is 0</span>
 <span class="sd">            The x-coordinate of the start of the Soil Layout plot</span>
