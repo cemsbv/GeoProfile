@@ -256,26 +256,11 @@ class Column:
             Show either the soil data in percentage or use a uniform color.
         plot_kwargs: Dict, optional
             Default is None
-            Dictionary with keys for properties to plot:
-
-            ``` python
-
-                {
-
-                    "qc": {
-
-                            "line_color": "black",
-
-                            "factor": 1,
-
-                        },
-
-                    "fr": {"line_color": "red"},
-
-                }
-
-            ```
-
+            Dictionary with keys for properties to plot.
+            Example: {
+                "coneResistance": {"line_color": "black"},
+                "localFriction": {"line_color": "red", "factor": 10},
+            }
         x0: float, optional
             Default is 0
             The x-coordinate of the start of the Soil Layout plot
