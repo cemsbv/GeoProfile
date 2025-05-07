@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2025-05-07
+
+### Documentation
+
+#### Column
+
+- Improvement of docstrings in Column plot method
+
+#### Section
+
+- Improvement of docstring and type hint of parameters of Section init method
+
+
+### Refactor
+
+#### Plot_map
+
+- [**breaking**] Refactor parameters of the plot map function
+
+
 ## [0.2.0] - 2025-05-06
 
 ### Bug Fixes
