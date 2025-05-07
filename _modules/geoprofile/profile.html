@@ -72,7 +72,7 @@
              
   <h1>Source code for geoprofile.profile</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
@@ -129,11 +129,9 @@
 <span class="sd">            Default is nearest_neighbor.</span>
 <span class="sd">            Define the sorting algorithm use to sort the data points.</span>
 <span class="sd">            Can be one of the following:</span>
-
 <span class="sd">                - tsp (traveling salesman problem)</span>
 <span class="sd">                - nearest_neighbor</span>
 <span class="sd">                - custom</span>
-
 <span class="sd">        reproject: bool, optional</span>
 <span class="sd">            Default is True</span>
 <span class="sd">            Reproject points of the column onto the profile line.</span>
@@ -379,7 +377,8 @@
         <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">add_basemap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">add_tags</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">tag_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="n">show_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Axes</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a map that contain the following:</span>
@@ -398,7 +397,13 @@
 <span class="sd">            Flag that includes basemap in figure.</span>
 <span class="sd">        add_tags : bool, optional</span>
 <span class="sd">            default is True</span>
-<span class="sd">            Show the CTP names as tags on the map</span>
+<span class="sd">            Show the CPT names or indices as tags on the map.</span>
+<span class="sd">        tag_type : str, optional</span>
+<span class="sd">            default is &quot;name&quot;</span>
+<span class="sd">            Type of tag to show on the map. Can be either &quot;name&quot; or &quot;index&quot;.</span>
+<span class="sd">        show_all : bool, optional</span>
+<span class="sd">            default is False</span>
+<span class="sd">            Show all columns on the map, not just the selected ones.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -460,11 +465,14 @@
 
         <span class="c1"># add labels (column names) to map</span>
         <span class="k">if</span> <span class="n">add_tags</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tag_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;tag_type must be either &#39;name&#39; or &#39;index&#39;&quot;</span><span class="p">)</span>
+
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span> <span class="k">if</span> <span class="n">debug</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_list_all</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">show_all</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_list_all</span>
             <span class="p">):</span>
                 <span class="n">axis</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
-                    <span class="n">i</span> <span class="k">if</span> <span class="n">debug</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">tag_type</span> <span class="o">==</span> <span class="s2">&quot;index&quot;</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">y</span><span class="p">),</span>
                     <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
                     <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span>
