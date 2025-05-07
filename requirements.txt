@@ -129,7 +129,7 @@ importlib-metadata==8.7.0
     # via ansible-lint
 iniconfig==2.1.0
     # via pytest
-ipython==9.1.0
+ipython==9.2.0
     # via GeoProfile (pyproject.toml)
 ipython-pygments-lexers==1.1.1
     # via ipython
