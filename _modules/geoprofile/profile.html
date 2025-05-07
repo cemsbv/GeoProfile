@@ -110,7 +110,9 @@
         <span class="n">data_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Column</span><span class="p">],</span>
         <span class="n">profile_line</span><span class="p">:</span> <span class="n">LineString</span><span class="p">,</span>
         <span class="n">buffer</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">sorting_algorithm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nearest_neighbor&quot;</span><span class="p">,</span>
+        <span class="n">sorting_algorithm</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+            <span class="s2">&quot;tsp&quot;</span><span class="p">,</span> <span class="s2">&quot;nearest_neighbor&quot;</span><span class="p">,</span> <span class="s2">&quot;custom&quot;</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;nearest_neighbor&quot;</span><span class="p">,</span>
         <span class="n">reproject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -121,11 +123,13 @@
 <span class="sd">        data_list: list</span>
 <span class="sd">            List with Column classes.</span>
 <span class="sd">        profile_line: LineString</span>
-<span class="sd">            profile line of the scoss section.</span>
+<span class="sd">            Profile line of the cross section.</span>
+<span class="sd">            It is linestring a list of (x, y) coordinates.</span>
+<span class="sd">            Example: LineString([(x1, y1), (x2, y2), ...])</span>
 <span class="sd">        buffer: float, optional</span>
 <span class="sd">            Default is 10</span>
 <span class="sd">            Buffer distance use to include columns in the profile [m]</span>
-<span class="sd">        sorting_algorithm: str, optional</span>
+<span class="sd">        sorting_algorithm: Literal[&quot;tsp&quot;, &quot;nearest_neighbor&quot;, &quot;custom&quot;], optional</span>
 <span class="sd">            Default is nearest_neighbor.</span>
 <span class="sd">            Define the sorting algorithm use to sort the data points.</span>
 <span class="sd">            Can be one of the following:</span>

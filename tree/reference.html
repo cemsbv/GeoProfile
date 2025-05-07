@@ -321,10 +321,12 @@ Flag that indicates if plot is standalone or part on of a profile.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data_list</strong> (<em>list</em>) – List with Column classes.</p></li>
-<li><p><strong>profile_line</strong> (<em>LineString</em>) – profile line of the scoss section.</p></li>
+<li><p><strong>profile_line</strong> (<em>LineString</em>) – Profile line of the cross section.
+It is linestring a list of (x, y) coordinates.
+Example: LineString([(x1, y1), (x2, y2), …])</p></li>
 <li><p><strong>buffer</strong> (<em>float</em><em>, </em><em>optional</em>) – Default is 10
 Buffer distance use to include columns in the profile [m]</p></li>
-<li><p><strong>sorting_algorithm</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Default is nearest_neighbor.
+<li><p><strong>sorting_algorithm</strong> (<em>Literal</em><em>[</em><em>&quot;tsp&quot;</em><em>, </em><em>&quot;nearest_neighbor&quot;</em><em>, </em><em>&quot;custom&quot;</em><em>]</em><em>, </em><em>optional</em>) – <p>Default is nearest_neighbor.
 Define the sorting algorithm use to sort the data points.
 Can be one of the following:</p>
 <blockquote>
