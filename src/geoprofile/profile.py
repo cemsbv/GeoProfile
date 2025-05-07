@@ -33,7 +33,9 @@ class Section:
         data_list: List[Column],
         profile_line: LineString,
         buffer: float = 10,
-        sorting_algorithm: str = "nearest_neighbor",
+        sorting_algorithm: Literal[
+            "tsp", "nearest_neighbor", "custom"
+        ] = "nearest_neighbor",
         reproject: bool = True,
     ) -> None:
         """
@@ -44,11 +46,13 @@ class Section:
         data_list: list
             List with Column classes.
         profile_line: LineString
-            profile line of the scoss section.
+            Profile line of the cross section.
+            It is linestring a list of (x, y) coordinates.
+            Example: LineString([(x1, y1), (x2, y2), ...])
         buffer: float, optional
             Default is 10
             Buffer distance use to include columns in the profile [m]
-        sorting_algorithm: str, optional
+        sorting_algorithm: Literal["tsp", "nearest_neighbor", "custom"], optional
             Default is nearest_neighbor.
             Define the sorting algorithm use to sort the data points.
             Can be one of the following:
