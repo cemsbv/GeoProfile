@@ -316,7 +316,7 @@ regex==2024.11.6
     # via
     #   cfn-lint
     #   sqlfluff
-requests==2.32.3
+requests==2.32.4
     # via
     #   cems-nuclei
     #   contextily
