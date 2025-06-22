@@ -109,7 +109,7 @@ executing==2.2.0
     # via stack-data
 filelock==3.18.0
     # via ansible-lint
-flake8==7.1.2
+flake8==7.3.0
     # via GeoProfile (pyproject.toml)
 fonttools==4.57.0
     # via matplotlib
