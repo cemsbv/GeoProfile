@@ -261,7 +261,7 @@ pycparser==2.22
     # via cffi
 pydantic==2.11.4
     # via aws-sam-translator
-pydantic-core==2.33.2
+pydantic-core==2.41.5
     # via pydantic
 pyflakes==3.2.0
     # via flake8
