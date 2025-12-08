@@ -44,18 +44,6 @@ docs = [
     "sphinx_rtd_theme==3.0.2",
     "m2r2>=0.3.4,<0.4",
 ]
-lint = [
-    "ansible-lint==25.1.3",
-    "black==25.1.0",
-    "cfn-lint==1.25.1",
-    "cpplint==2.0.0",
-    "flake8==7.1.2",
-    "isort==6.0.0",
-    "mypy==1.15.0",
-    "sqlfluff==3.3.1",
-    "yamllint==1.35.1",
-    "yq==3.4.3",
-]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
@@ -103,6 +91,7 @@ module = [
     "plotly.*",
     "pygef.*",
     "nuclei/*",
+    "PIL/*",
 ]
 ignore_missing_imports = true
 
