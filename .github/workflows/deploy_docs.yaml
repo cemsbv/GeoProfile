@@ -5,30 +5,36 @@ on:
     branches:
       - main
 
+permissions: read-all
+
 jobs:
   deploy_docs:
     name: Deploy docs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions: write-all
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Install python 3.11
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v6
         with:
-          python-version: 3.11
+          persist-credentials: false
+
+      - name: Install python 3.13
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools
           pip install -r requirements.txt
           pip install .
+
       - name: Build docs
         run: sphinx-build -b html docs public
         env:
           NUCLEI_TOKEN: ${{ secrets.NUCLEI_TOKEN }}
 
       - name: Publish docs
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
