@@ -8,7 +8,8 @@ from plotly.graph_objs import Figure
 from plotly.subplots import make_subplots
 from python_tsp.exact import solve_tsp_dynamic_programming
 from scipy import spatial
-from shapely.geometry import LineString, Point
+from shapely import BufferCapStyle, BufferJoinStyle
+from shapely.geometry import LineString, Point, Polygon
 from skspatial.objects import Line
 from tqdm import tqdm
 
@@ -25,6 +26,11 @@ except ImportError:
     gpd = None
     plt = None
     Axes = None
+
+SHAPELY_BUFFER_SETTINGS = {
+    "cap_style": BufferCapStyle.square,
+    "join_style": BufferJoinStyle.bevel,
+}
 
 
 class Section:
@@ -109,9 +115,9 @@ class Section:
         return self._sorting_algorithm
 
     @property
-    def profile_polygon(self) -> LineString:
+    def profile_polygon(self) -> Polygon:
         """polygon create based on the profile line and the buffer argument"""
-        return self.profile_line.buffer(self.buffer, cap_style=2, join_style=1)
+        return self.profile_line.buffer(self.buffer, **SHAPELY_BUFFER_SETTINGS)
 
     @property
     def coordinates_all(self) -> NDArray[np.floating]:
@@ -205,7 +211,7 @@ class Section:
             for i, item in enumerate(self.coordinates_include):
                 if Point(item[0], item[1]).covered_by(
                     LineString((nodes[sigment], nodes[sigment + 1])).buffer(
-                        self.buffer, cap_style=2, join_style=1
+                        self.buffer, **SHAPELY_BUFFER_SETTINGS
                     )
                 ):
                     line = Line.from_points(
@@ -373,7 +379,7 @@ class Section:
         for node in self.sorting[0]:
             x.append(self.data_list_include[node].x)
             y.append(self.data_list_include[node].y)
-        axis.plot(x, y, "-")
+        axis.plot(x, y, "-", color="blue")
 
         # add re-projection of point to line
         if self.reproject:
