@@ -99,6 +99,8 @@ jobs:
           VALIDATE_PYTHON_PYLINT: false
           VALIDATE_PYTHON_RUFF: false
           VALIDATE_PYTHON_RUFF_FORMAT: false
+          VALIDATE_JUPYTER_NBQA_RUFF: false
+          VALIDATE_JUPYTER_NBQA_PYLINT: false
           VALIDATE_TSX: false
           VALIDATE_TYPESCRIPT_ES: false
           VALIDATE_TYPESCRIPT_PRETTIER: false
