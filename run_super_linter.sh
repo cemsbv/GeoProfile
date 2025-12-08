@@ -6,9 +6,8 @@ docker run \
 --env FIX_PYTHON_ISORT=true \
 --env FIX_PYTHON_BLACK=true \
 --env FIX_YAML_PRETTIER=true \
---env FIX_GITHUB_ACTIONS_ZIZMOR=true \
 --env VALIDATE_BASH=false \
---env VALIDATE_GITHUB_ACTIONS_ZIZMOR=false\
+--env VALIDATE_GITHUB_ACTIONS_ZIZMOR=false \
 --env VALIDATE_BIOME_FIX=false \
 --env VALIDATE_BIOME_FORMAT=false \
 --env VALIDATE_BIOME_LINT=false \
@@ -44,4 +43,4 @@ docker run \
 --env PYTHON_ISORT_CONFIG_FILE=pyproject.toml \
 --env PYTHON_MYPY_CONFIG_FILE=pyproject.toml \
 --env PYTHON_FLAKE8_CONFIG_FILE=.flake8 \
--v $(pwd):/tmp/lint ghcr.io/super-linter/super-linter:v8
+-v "$(pwd):/tmp/lint" ghcr.io/super-linter/super-linter:v8
