@@ -28,8 +28,8 @@ except ImportError:
     Axes = None
 
 SHAPELY_BUFFER_SETTINGS = {
-    "cap_style": BufferCapStyle.square,
-    "join_style": BufferJoinStyle.bevel,
+    "cap_style": BufferCapStyle.flat,
+    "join_style": BufferJoinStyle.round,
 }
 
 
@@ -205,19 +205,20 @@ class Section:
         """list of coordinates of the selected column locations reprojected on the profile line"""
 
         nodes = list(zip(*self.profile_line.xy))
+        _distance_point: Dict[Union[int, str], float] = {}
         projected_point: Dict[Union[int, str], List[float]] = {}
 
-        for sigment in range(len(nodes) - 1):
-            for i, item in enumerate(self.coordinates_include):
-                if Point(item[0], item[1]).covered_by(
-                    LineString((nodes[sigment], nodes[sigment + 1])).buffer(
-                        self.buffer, **SHAPELY_BUFFER_SETTINGS
-                    )
-                ):
-                    line = Line.from_points(
-                        point_a=nodes[sigment], point_b=nodes[sigment + 1]
-                    )
-                    point = line.project_point((item[0], item[1]))
+        for i, item in enumerate(self.coordinates_include):
+            for sigment in range(len(nodes) - 1):
+                line = Line.from_points(
+                    point_a=nodes[sigment], point_b=nodes[sigment + 1]
+                )
+                point = line.project_point((item[0], item[1]))
+                distance = line.distance_point((item[0], item[1]))
+
+                # make use that every point is mapped once to the closed line
+                if _distance_point.get(i, self.buffer * 1.1) > distance:
+                    _distance_point[i] = distance
                     projected_point[i] = [point[0], point[1]]
         return projected_point
 
