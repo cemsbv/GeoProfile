@@ -8,7 +8,7 @@ from plotly.graph_objs import Figure
 from plotly.subplots import make_subplots
 from python_tsp.exact import solve_tsp_dynamic_programming
 from scipy import spatial
-from shapely import BufferCapStyle, BufferJoinStyle
+from shapely import BufferCapStyle, BufferJoinStyle, get_coordinates
 from shapely.geometry import LineString, Point, Polygon
 from skspatial.objects import Line
 from tqdm import tqdm
@@ -213,22 +213,41 @@ class Section:
                 line = Line.from_points(
                     point_a=nodes[sigment], point_b=nodes[sigment + 1]
                 )
-                point = line.project_point((item[0], item[1]))
+                point = line.project_point((item[0], item[1])).tolist()
 
                 # check the distance between point and line with shapely
                 # skspatial gives incorrect values when point is extension of the line
                 # tested in `tests.test_profile.py.test_reprojecting`
-                _line = LineString([nodes[sigment], nodes[sigment + 1]])
-                distance_original = _line.distance(Point([item[0], item[1]]))
-                distance_reprojection = _line.distance(Point([point[0], point[1]]))
+                _point_line_start = Point(nodes[sigment])
+                _point_line_end = Point(nodes[sigment + 1])
+                _point_original = Point([item[0], item[1]])
+                _point_reprojection = Point([point[0], point[1]])
+                _line = LineString([_point_line_start, _point_line_end])
 
-                # make use that every point is mapped once to the closed line
-                if _distance_point.get(
-                    i, self.buffer * 1.1
-                ) > distance_original and np.isclose(
-                    distance_reprojection, 0.0, atol=0.01
-                ):
-                    _distance_point[i] = distance_original
+                distance_original2line = _line.distance(_point_original)
+                distance_reprojection2line = _line.distance(_point_reprojection)
+
+                # When using skspatial for reprojection, points that lie at the 90∘
+                #  corner of a geometry (i.e., forming a right angle with two adjacent segments)
+                #  are being reprojected incorrectly. The resulting reprojected point does not lie on
+                #  the expected target geometry. Set it to the node manually
+                if not np.isclose(distance_reprojection2line, 0.0, atol=0.01):
+                    distance_reprojection2line_start = _point_line_start.distance(
+                        _point_reprojection
+                    )
+                    distance_reprojection2line_end = _point_line_end.distance(
+                        _point_reprojection
+                    )
+                    point = (
+                        get_coordinates(_point_line_start).flatten().tolist()
+                        if distance_reprojection2line_start
+                        < distance_reprojection2line_end
+                        else get_coordinates(_point_line_end).flatten().tolist()
+                    )
+
+                    # make use that every point is mapped once to the closed line
+                if _distance_point.get(i, self.buffer * 1.1) > distance_original2line:
+                    _distance_point[i] = distance_original2line
                     projected_point[i] = [point[0], point[1]]
 
         return projected_point
@@ -396,7 +415,7 @@ class Section:
         # add re-projection of point to line
         if self.reproject:
             for key, value in self.coordinates_include_reprojection.items():
-                plt.annotate(
+                axis.annotate(
                     "",
                     xy=self.coordinates_include[key],
                     xycoords="data",
