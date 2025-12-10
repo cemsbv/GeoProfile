@@ -30,7 +30,7 @@ pip install geoprofile
 
 ## Environment
 
-We recommend developing in Python3.12 with a clean virtual environment (using `virtualenv` or `conda`), installing the
+We recommend developing in Python3.13 with a clean virtual environment (using `virtualenv` or `conda`), installing the
 requirements from the requirements.txt file:
 
 Example using `virtualenv` and `pip` to install the dependencies in a new environment .env on Linux:
@@ -43,20 +43,23 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-Example using `conda`and `pip` to install the dependencies in a new environment env on Windows, using Anaconda Prompt. First you clone the GeoProfile repository to a local folder (c:\my_python_files\geoprofile) and change directory towards it. You will create an empty conda enviroment with python 3.12 and activate it. Python 3.12 is given in `requirements.txt`. The name of the environment is not `env`, as in Linux example above, because the name `env` has a special property in conda. You will update pip. Install dependencies. 
+Example using `conda`and `pip` to install the dependencies in a new environment env on Windows, using Anaconda Prompt.
+First you clone the GeoProfile repository to a local folder (c:\my_python_files\geoprofile) and change directory towards
+it. You will create an empty conda environment with python 3.13 and activate it. Python 3.13 is given in
+`requirements.txt`. The name of the environment is not `env`, as in Linux example above, because the name `env` has a
+special property in conda. You will update pip. Install dependencies.
 
-Last three lines are optional. Installation of `ipykernel` allows to run a notebook in this environment. To save figures in the notebook example: install `kaleido` and update `plotly`.
+Last line is optional. Installation of `ipykernel` allows to run a notebook in this environment.
 
 ```bash
 git clone https://github.com/cemsbv/GeoProfile.git c:\my_python_files\geoprofile
 cd c:\my_python_files\geoprofile
-conda create --name env_geoprofile --no-default-packages python=3.12
+conda create --name env_geoprofile --no-default-packages python=3.13
 conda activate env_geoprofile
 python -m pip install --upgrade pip setuptools
 pip install -r requirements.txt
 pip install -e .
 conda install ipykernel
-pip install plotly==6.1.1
 ```
 
 ## Documentation
@@ -86,7 +89,7 @@ Test the software with the use of coverage:
 ```bash
 python -m pip install --upgrade pip setuptools
 pip install -r requirements.txt
-pip install .
+pip install -e .
 coverage run -m pytest
 ```
 
