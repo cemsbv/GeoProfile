@@ -214,12 +214,23 @@ class Section:
                     point_a=nodes[sigment], point_b=nodes[sigment + 1]
                 )
                 point = line.project_point((item[0], item[1]))
-                distance = line.distance_point((item[0], item[1]))
+
+                # check the distance between point and line with shapely
+                # skspatial gives incorrect values when point is extension of the line
+                # tested in `tests.test_profile.py.test_reprojecting`
+                _line = LineString([nodes[sigment], nodes[sigment + 1]])
+                distance_original = _line.distance(Point([item[0], item[1]]))
+                distance_reprojection = _line.distance(Point([point[0], point[1]]))
 
                 # make use that every point is mapped once to the closed line
-                if _distance_point.get(i, self.buffer * 1.1) > distance:
-                    _distance_point[i] = distance
+                if _distance_point.get(
+                    i, self.buffer * 1.1
+                ) > distance_original and np.isclose(
+                    distance_reprojection, 0.0, atol=0.01
+                ):
+                    _distance_point[i] = distance_original
                     projected_point[i] = [point[0], point[1]]
+
         return projected_point
 
     @property
