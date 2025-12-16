@@ -8,7 +8,8 @@ from plotly.graph_objs import Figure
 from plotly.subplots import make_subplots
 from python_tsp.exact import solve_tsp_dynamic_programming
 from scipy import spatial
-from shapely.geometry import LineString, Point
+from shapely import BufferCapStyle, BufferJoinStyle, get_coordinates
+from shapely.geometry import LineString, Point, Polygon
 from skspatial.objects import Line
 from tqdm import tqdm
 
@@ -25,6 +26,11 @@ except ImportError:
     gpd = None
     plt = None
     Axes = None
+
+SHAPELY_BUFFER_SETTINGS = {
+    "cap_style": BufferCapStyle.flat,
+    "join_style": BufferJoinStyle.round,
+}
 
 
 class Section:
@@ -109,9 +115,9 @@ class Section:
         return self._sorting_algorithm
 
     @property
-    def profile_polygon(self) -> LineString:
+    def profile_polygon(self) -> Polygon:
         """polygon create based on the profile line and the buffer argument"""
-        return self.profile_line.buffer(self.buffer, cap_style=2, join_style=1)
+        return self.profile_line.buffer(self.buffer, **SHAPELY_BUFFER_SETTINGS)
 
     @property
     def coordinates_all(self) -> NDArray[np.floating]:
@@ -199,20 +205,51 @@ class Section:
         """list of coordinates of the selected column locations reprojected on the profile line"""
 
         nodes = list(zip(*self.profile_line.xy))
+        _distance_point: Dict[Union[int, str], float] = {}
         projected_point: Dict[Union[int, str], List[float]] = {}
 
-        for sigment in range(len(nodes) - 1):
-            for i, item in enumerate(self.coordinates_include):
-                if Point(item[0], item[1]).covered_by(
-                    LineString((nodes[sigment], nodes[sigment + 1])).buffer(
-                        self.buffer, cap_style=2, join_style=1
+        for i, item in enumerate(self.coordinates_include):
+            for sigment in range(len(nodes) - 1):
+                line = Line.from_points(
+                    point_a=nodes[sigment], point_b=nodes[sigment + 1]
+                )
+                point = line.project_point((item[0], item[1])).tolist()
+
+                # check the distance between point and line with shapely
+                # skspatial gives incorrect values when point is extension of the line
+                # tested in `tests.test_profile.py.test_reprojecting`
+                _point_line_start = Point(nodes[sigment])
+                _point_line_end = Point(nodes[sigment + 1])
+                _point_original = Point([item[0], item[1]])
+                _point_reprojection = Point([point[0], point[1]])
+                _line = LineString([_point_line_start, _point_line_end])
+
+                distance_original2line = _line.distance(_point_original)
+                distance_reprojection2line = _line.distance(_point_reprojection)
+
+                # When using skspatial for reprojection, points that lie at the 90∘
+                #  corner of a geometry (i.e., forming a right angle with two adjacent segments)
+                #  are being reprojected incorrectly. The resulting reprojected point does not lie on
+                #  the expected target geometry. Set it to the node manually
+                if not np.isclose(distance_reprojection2line, 0.0, atol=0.01):
+                    distance_reprojection2line_start = _point_line_start.distance(
+                        _point_reprojection
                     )
-                ):
-                    line = Line.from_points(
-                        point_a=nodes[sigment], point_b=nodes[sigment + 1]
+                    distance_reprojection2line_end = _point_line_end.distance(
+                        _point_reprojection
                     )
-                    point = line.project_point((item[0], item[1]))
+                    point = (
+                        get_coordinates(_point_line_start).flatten().tolist()
+                        if distance_reprojection2line_start
+                        < distance_reprojection2line_end
+                        else get_coordinates(_point_line_end).flatten().tolist()
+                    )
+
+                    # make use that every point is mapped once to the closed line
+                if _distance_point.get(i, self.buffer * 1.1) > distance_original2line:
+                    _distance_point[i] = distance_original2line
                     projected_point[i] = [point[0], point[1]]
+
         return projected_point
 
     @property
@@ -373,12 +410,12 @@ class Section:
         for node in self.sorting[0]:
             x.append(self.data_list_include[node].x)
             y.append(self.data_list_include[node].y)
-        axis.plot(x, y, "-")
+        axis.plot(x, y, "-", color="blue")
 
         # add re-projection of point to line
         if self.reproject:
             for key, value in self.coordinates_include_reprojection.items():
-                plt.annotate(
+                axis.annotate(
                     "",
                     xy=self.coordinates_include[key],
                     xycoords="data",

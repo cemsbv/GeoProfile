@@ -28,6 +28,7 @@ map = [
     "contextily>=1.6.2,<2",
     "matplotlib>=3.10.1,<4",
 ]
+plot = ["kaleido>=1,<2"]
 gef = ["pygef>=0.11.1,<0.12"]
 notebook = ["cems-nuclei[client]>=3.0.0,<4"]
 test = [
