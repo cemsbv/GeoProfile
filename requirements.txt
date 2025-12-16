@@ -162,7 +162,7 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
     # via stack-data
-pygef==0.11.1
+pygef==0.14.0
     # via geoprofile (pyproject.toml)
 pygments==2.19.2
     # via
