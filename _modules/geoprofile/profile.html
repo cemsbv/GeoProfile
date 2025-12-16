@@ -81,7 +81,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">plotly.subplots</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_subplots</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">python_tsp.exact</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_tsp_dynamic_programming</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">spatial</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely</span><span class="w"> </span><span class="kn">import</span> <span class="n">BufferCapStyle</span><span class="p">,</span> <span class="n">BufferJoinStyle</span><span class="p">,</span> <span class="n">get_coordinates</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">skspatial.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
@@ -98,6 +99,11 @@
     <span class="n">gpd</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">plt</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">SHAPELY_BUFFER_SETTINGS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;cap_style&quot;</span><span class="p">:</span> <span class="n">BufferCapStyle</span><span class="o">.</span><span class="n">flat</span><span class="p">,</span>
+    <span class="s2">&quot;join_style&quot;</span><span class="p">:</span> <span class="n">BufferJoinStyle</span><span class="o">.</span><span class="n">round</span><span class="p">,</span>
+<span class="p">}</span>
 
 
 <div class="viewcode-block" id="Section">
@@ -187,9 +193,9 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorting_algorithm</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">profile_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LineString</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">profile_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Polygon</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;polygon create based on the profile line and the buffer argument&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">cap_style</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">join_style</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="o">**</span><span class="n">SHAPELY_BUFFER_SETTINGS</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">coordinates_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]:</span>
@@ -277,20 +283,51 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;list of coordinates of the selected column locations reprojected on the profile line&quot;&quot;&quot;</span>
 
         <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">profile_line</span><span class="o">.</span><span class="n">xy</span><span class="p">))</span>
+        <span class="n">_distance_point</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">projected_point</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">for</span> <span class="n">sigment</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">Point</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">covered_by</span><span class="p">(</span>
-                    <span class="n">LineString</span><span class="p">((</span><span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">cap_style</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">join_style</span><span class="o">=</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">sigment</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">Line</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span>
+                    <span class="n">point_a</span><span class="o">=</span><span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span><span class="p">],</span> <span class="n">point_b</span><span class="o">=</span><span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">point</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">project_point</span><span class="p">((</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+                <span class="c1"># check the distance between point and line with shapely</span>
+                <span class="c1"># skspatial gives incorrect values when point is extension of the line</span>
+                <span class="c1"># tested in `tests.test_profile.py.test_reprojecting`</span>
+                <span class="n">_point_line_start</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span><span class="p">])</span>
+                <span class="n">_point_line_end</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="n">_point_original</span> <span class="o">=</span> <span class="n">Point</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                <span class="n">_point_reprojection</span> <span class="o">=</span> <span class="n">Point</span><span class="p">([</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                <span class="n">_line</span> <span class="o">=</span> <span class="n">LineString</span><span class="p">([</span><span class="n">_point_line_start</span><span class="p">,</span> <span class="n">_point_line_end</span><span class="p">])</span>
+
+                <span class="n">distance_original2line</span> <span class="o">=</span> <span class="n">_line</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">_point_original</span><span class="p">)</span>
+                <span class="n">distance_reprojection2line</span> <span class="o">=</span> <span class="n">_line</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">_point_reprojection</span><span class="p">)</span>
+
+                <span class="c1"># When using skspatial for reprojection, points that lie at the 90∘</span>
+                <span class="c1">#  corner of a geometry (i.e., forming a right angle with two adjacent segments)</span>
+                <span class="c1">#  are being reprojected incorrectly. The resulting reprojected point does not lie on</span>
+                <span class="c1">#  the expected target geometry. Set it to the node manually</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">distance_reprojection2line</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+                    <span class="n">distance_reprojection2line_start</span> <span class="o">=</span> <span class="n">_point_line_start</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span>
+                        <span class="n">_point_reprojection</span>
                     <span class="p">)</span>
-                <span class="p">):</span>
-                    <span class="n">line</span> <span class="o">=</span> <span class="n">Line</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span>
-                        <span class="n">point_a</span><span class="o">=</span><span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span><span class="p">],</span> <span class="n">point_b</span><span class="o">=</span><span class="n">nodes</span><span class="p">[</span><span class="n">sigment</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="n">distance_reprojection2line_end</span> <span class="o">=</span> <span class="n">_point_line_end</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span>
+                        <span class="n">_point_reprojection</span>
                     <span class="p">)</span>
-                    <span class="n">point</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">project_point</span><span class="p">((</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="n">point</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">get_coordinates</span><span class="p">(</span><span class="n">_point_line_start</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">distance_reprojection2line_start</span>
+                        <span class="o">&lt;</span> <span class="n">distance_reprojection2line_end</span>
+                        <span class="k">else</span> <span class="n">get_coordinates</span><span class="p">(</span><span class="n">_point_line_end</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># make use that every point is mapped once to the closed line</span>
+                <span class="k">if</span> <span class="n">_distance_point</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">distance_original2line</span><span class="p">:</span>
+                    <span class="n">_distance_point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance_original2line</span>
                     <span class="n">projected_point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
         <span class="k">return</span> <span class="n">projected_point</span>
 
     <span class="nd">@property</span>
@@ -453,12 +490,12 @@
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorting</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
             <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
             <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_list_include</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
-        <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
 
         <span class="c1"># add re-projection of point to line</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reproject</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include_reprojection</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
                     <span class="s2">&quot;&quot;</span><span class="p">,</span>
                     <span class="n">xy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates_include</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
                     <span class="n">xycoords</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
