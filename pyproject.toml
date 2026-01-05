@@ -40,7 +40,7 @@ test = [
 docs = [
     "Sphinx==8.2.3",
     "sphinx-autodoc-typehints==3.1.0",
-    "ipython==9.1.0",
+    "ipython==9.9.0",
     "asteroid-sphinx-theme==0.0.3",
     "sphinx_rtd_theme==3.0.2",
     "m2r2>=0.3.4,<0.4",
