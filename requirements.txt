@@ -74,7 +74,7 @@ imagesize==1.4.1
     # via sphinx
 iniconfig==2.3.0
     # via pytest
-ipython==9.1.0
+ipython==9.9.0
     # via geoprofile (pyproject.toml)
 ipython-pygments-lexers==1.1.1
     # via ipython
