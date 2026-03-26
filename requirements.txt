@@ -196,7 +196,7 @@ pytz==2025.2
     # via pandas
 rasterio==1.4.3
     # via contextily
-requests==2.32.5
+requests==2.33.0
     # via
     #   cems-nuclei
     #   contextily
