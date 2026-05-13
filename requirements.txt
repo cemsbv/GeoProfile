@@ -92,7 +92,7 @@ logistro==2.0.1
     # via
     #   choreographer
     #   kaleido
-lxml==5.4.0
+lxml==6.1.0
     # via pygef
 m2r2==0.3.4
     # via geoprofile (pyproject.toml)
