@@ -23,19 +23,15 @@ keywords = ["visualizing"]
 repository = "https://github.com/cemsbv/GeoProfile"
 
 [project.optional-dependencies]
-map = [
-    "geopandas>=1.0.1,<2",
-    "contextily>=1.6.2,<2",
-    "matplotlib>=3.10.1,<4",
-]
+map = ["geopandas>=1.0.1,<2", "contextily>=1.6.2,<2", "matplotlib>=3.10.1,<4"]
 plot = ["kaleido>=1,<2"]
 gef = ["pygef>=0.11.1,<0.12"]
-notebook = ["cems-nuclei[client]>=3.0.0,<4"]
+notebook = ["cems-nuclei[client]>=3.2.1,<4"]
 test = [
     # coveralls is fixed to 3.3.1, because there is no support for python 3.13
     # in further versions
-    "coveralls==3.3.1", 
-    "pytest>=8.3.5,<9"
+    "coveralls==3.3.1",
+    "pytest>=8.3.5,<9",
 ]
 docs = [
     "Sphinx==8.2.3",
