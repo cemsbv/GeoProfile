@@ -180,7 +180,7 @@ pyparsing==3.2.5
     #   rasterio
 pyproj==3.7.2
     # via geopandas
-pytest==8.4.2
+pytest==9.0.3
     # via
     #   geoprofile (pyproject.toml)
     #   pytest-timeout
