@@ -25,7 +25,7 @@ repository = "https://github.com/cemsbv/GeoProfile"
 [project.optional-dependencies]
 map = ["geopandas>=1.0.1,<2", "contextily>=1.6.2,<2", "matplotlib>=3.10.1,<4"]
 plot = ["kaleido>=1,<2"]
-gef = ["pygef>=0.11.1,<0.12"]
+gef = ["pygef>=0.14.1,<0.15"]
 notebook = ["cems-nuclei[client]>=3.2.1,<4"]
 test = [
     # coveralls is fixed to 3.3.1, because there is no support for python 3.13
