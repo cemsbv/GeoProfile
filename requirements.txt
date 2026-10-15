@@ -125,7 +125,7 @@ numpy==2.3.5
     #   scikit-spatial
     #   scipy
     #   shapely
-orjson==3.11.5
+orjson==3.11.6
     # via
     #   cems-nuclei
     #   kaleido
