@@ -14,7 +14,7 @@ babel==2.17.0
     # via sphinx
 cems-nuclei==3.2.1
     # via geoprofile (pyproject.toml)
-certifi==2025.11.12
+certifi==2026.10.19
     # via
     #   pyogrio
     #   pyproj
