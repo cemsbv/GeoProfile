@@ -64,7 +64,7 @@ gef-file-to-map==0.2.1
     # via pygef
 geographiclib==2.1
     # via geopy
-geopandas==1.1.1
+geopandas==1.1.2
     # via geoprofile (pyproject.toml)
 geopy==2.4.1
     # via contextily
